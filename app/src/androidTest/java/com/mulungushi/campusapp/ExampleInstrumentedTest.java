@@ -1,4 +1,4 @@
-package com.example.campusapp;
+package com.mulungushi.campusapp;
 
 import android.content.Context;
 

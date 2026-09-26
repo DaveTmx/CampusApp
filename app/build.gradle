@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace 'com.example.campusapp'
+    namespace 'com.mulungushi.campusapp'
     compileSdk {
         version = release(37)
     }
