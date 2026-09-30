@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background">
+
+    <LinearLayout style="@style/SectionHeader">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="My Account" android:textColor="@color/white" android:textSize="22sp" android:textStyle="bold"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp"
+            android:text="Mulungushi Lecturer Portal" android:textColor="#B9C6DA" android:textSize="13sp"/>
+    </LinearLayout>
+
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:background="@drawable/bg_card" android:padding="16dp" android:elevation="2dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Mr. E. Nyirenda" android:textStyle="bold" android:textSize="18sp" android:textColor="@color/text_dark"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp"
+                    android:text="instructor@mu.ac.zm" android:textSize="13sp" android:textColor="@color/text_gray"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp"
+                    android:text="Department of Computer Science" android:textSize="13sp" android:textColor="@color/text_gray"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="CLASS MANAGEMENT" android:textSize="11sp" android:textStyle="bold" android:textColor="@color/text_gray"/>
+
+            <TextView android:id="@+id/tvStudentRoster" style="@style/ProfileAction" android:layout_marginTop="8dp" android:text="Student Roster"/>
+            <TextView android:id="@+id/tvGroups" style="@style/ProfileAction" android:text="Groups"/>
+            <TextView android:id="@+id/tvSyncStatus" style="@style/ProfileAction" android:text="Sync Status"/>
+
+            <TextView
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="ACCOUNT" android:textSize="11sp" android:textStyle="bold" android:textColor="@color/text_gray"/>
+
+            <TextView android:id="@+id/tvChangePassword" style="@style/ProfileAction" android:layout_marginTop="8dp" android:text="Change password"/>
+            <TextView android:id="@+id/tvNotificationSettings" style="@style/ProfileAction" android:text="Notification settings"/>
+
+            <Button
+                android:id="@+id/btnLogout"
+                android:layout_width="match_parent" android:layout_height="52dp"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/bg_button_red" android:text="Log out"
+                android:textAllCaps="false" android:textColor="@color/white" android:textStyle="bold" android:elevation="0dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <include layout="@layout/layout_bottom_nav" android:id="@+id/bottomNavInclude"/>
+
+</LinearLayout>

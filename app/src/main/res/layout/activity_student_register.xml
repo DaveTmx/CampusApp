@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/ic_back"
+            app:tint="@color/text_dark"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Student Register"
+            android:textColor="@color/text_dark"
+            android:textSize="24sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="24dp"
+            android:text="Create your student profile"
+            android:textColor="@color/text_gray"
+            android:textSize="14sp"/>
+
+        <TextView style="@style/InputLabel" android:text="Full Name"/>
+        <EditText android:id="@+id/etFullName" style="@style/InputField"
+            android:hint="e.g. Chileshe Mulenga" android:inputType="textPersonName|textCapWords"/>
+
+        <TextView style="@style/InputLabel" android:text="Student Number"/>
+        <EditText android:id="@+id/etStudentNumber" style="@style/InputField"
+            android:hint="e.g. 20241908" android:inputType="number"/>
+
+        <TextView style="@style/InputLabel" android:text="Program"/>
+        <include layout="@layout/view_program_spinner"/>
+
+        <TextView style="@style/InputLabel" android:text="Password"/>
+        <EditText android:id="@+id/etPassword" style="@style/InputField"
+            android:hint="••••••••" android:inputType="textPassword"/>
+
+        <TextView style="@style/InputLabel" android:text="Confirm Password"/>
+        <EditText android:id="@+id/etConfirmPassword" style="@style/InputField"
+            android:hint="••••••••" android:inputType="textPassword"/>
+
+        <Button
+            android:id="@+id/btnCreateAccount"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_button_blue"
+            android:text="Create account"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:elevation="0dp"/>
+
+        <Button
+            android:id="@+id/btnSaveDraft"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_button_outline"
+            android:text="Save draft"
+            android:textAllCaps="false"
+            android:textColor="@color/text_dark"
+            android:elevation="0dp"/>
+
+        <TextView
+            android:id="@+id/tvLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="18dp"
+            android:text="Already registered? Log in"
+            android:textColor="@color/primary_blue"
+            android:textSize="14sp"/>
+
+    </LinearLayout>
+</ScrollView>
