@@ -21,7 +21,7 @@
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                     android:text="Mr. E. Nyirenda" android:textStyle="bold" android:textSize="18sp" android:textColor="@color/text_dark"/>
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp"
-                    android:text="instructor@mu.ac.zm" android:textSize="13sp" android:textColor="@color/text_gray"/>
+                    android:text="muleba@gmail.com" android:textSize="13sp" android:textColor="@color/text_gray"/>
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp"
                     android:text="Department of Computer Science" android:textSize="13sp" android:textColor="@color/text_gray"/>
             </LinearLayout>
