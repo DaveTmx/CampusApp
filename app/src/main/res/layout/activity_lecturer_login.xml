@@ -33,7 +33,7 @@
         android:textSize="14sp"/>
 
     <TextView style="@style/InputLabel" android:text="Staff Email"/>
-    <EditText style="@style/InputField" android:hint="e.g. instructor@mu.ac.zm" android:inputType="textEmailAddress"/>
+    <EditText style="@style/InputField" android:hint="e.g. muleba@gmail.com" android:inputType="textEmailAddress"/>
 
     <TextView style="@style/InputLabel" android:text="Password"/>
     <EditText style="@style/InputField" android:hint="••••••••" android:inputType="textPassword"/>

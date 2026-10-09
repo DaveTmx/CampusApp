@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:layout_marginBottom="24dp"
-            android:text="Create your student profile"
+            android:text="Create your student profile with email &amp; OTP security"
             android:textColor="@color/text_gray"
             android:textSize="14sp"/>
 
@@ -43,6 +43,10 @@
         <TextView style="@style/InputLabel" android:text="Student Number"/>
         <EditText android:id="@+id/etStudentNumber" style="@style/InputField"
             android:hint="e.g. 20241908" android:inputType="number"/>
+
+        <TextView style="@style/InputLabel" android:text="Email Address"/>
+        <EditText android:id="@+id/etEmail" style="@style/InputField"
+            android:hint="e.g. muleba@gmail.com" android:inputType="textEmailAddress"/>
 
         <TextView style="@style/InputLabel" android:text="Program"/>
         <include layout="@layout/view_program_spinner"/>
@@ -61,6 +65,8 @@
             android:layout_height="52dp"
             android:layout_marginTop="16dp"
             android:background="@drawable/bg_button_blue"
+            android:backgroundTint="@null"
+            app:backgroundTint="@null"
             android:text="Create account"
             android:textAllCaps="false"
             android:textColor="@color/white"
