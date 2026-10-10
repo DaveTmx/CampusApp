@@ -231,6 +231,7 @@ public class EditorViewModel extends ViewModel {
             numberError.postValue(R.string.msg_duplicate_number);
             return;
         }
+        Object StatusMessages;
         if (!result.isSaved() || result.data == null) {
             busy.postValue(false);
             message.postValue(new Event<>(StatusMessages.forStatus(result.status)));
@@ -268,6 +269,7 @@ public class EditorViewModel extends ViewModel {
 
     private void done(Result.Status status) {
         busy.postValue(false);
+        Object StatusMessages;
         message.postValue(new Event<>(StatusMessages.forStatus(status)));
         finished.postValue(true);
     }

@@ -67,6 +67,7 @@ public class AuthViewModel extends ViewModel {
             if (result.isSaved()) {
                 session.postValue(result.data);
             } else {
+                Object StatusMessages;
                 error.postValue(StatusMessages.forStatus(result.status));
             }
         });
