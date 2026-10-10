@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *     (not just "ignores the old result later") — the same behaviour the
  *     real Retrofit Call.cancel() gives you.
  */
-public class FakeStudentRepository implements StudentRepository {
+public class FakeStudentRepository implements StudentPageRepository {
 
     private static final int SIMULATED_NETWORK_DELAY_MS = 700;
 
