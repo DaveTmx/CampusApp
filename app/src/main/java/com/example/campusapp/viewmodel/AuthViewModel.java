@@ -65,7 +65,7 @@ public class AuthViewModel extends ViewModel {
         repository.signIn(user, password, result -> {
             loading.postValue(false);
             if (result.isSaved()) {
-                session.postValue(result.Data);
+                session.postValue(result.data);
             } else {
                 error.postValue(StatusMessages.forStatus(result.status));
             }
