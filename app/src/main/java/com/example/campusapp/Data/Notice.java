@@ -1,4 +1,4 @@
-package com.example.campusapp.data;
+package com.example.campusapp.Data;
 
 /** A bulletin posted by a lecturer/admin and shown on both the student and lecturer Notices screens. */
 public class Notice {

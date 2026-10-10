@@ -16,7 +16,6 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
     private EditText etEmail, etOtp, etNewPassword;
     private LinearLayout layoutEmailStep, layoutOtpStep;
-    private Button btnSendOtp, btnResetPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +29,8 @@ public class ResetPasswordActivity extends AppCompatActivity {
         etNewPassword = findViewById(R.id.etNewPassword);
         layoutEmailStep = findViewById(R.id.layoutEmailStep);
         layoutOtpStep = findViewById(R.id.layoutOtpStep);
-        btnSendOtp = findViewById(R.id.btnSendOtp);
-        btnResetPassword = findViewById(R.id.btnResetPassword);
+        Button btnSendOtp = findViewById(R.id.btnSendOtp);
+        Button btnResetPassword = findViewById(R.id.btnResetPassword);
 
         btnSendOtp.setOnClickListener(v -> {
             String email = etEmail.getText().toString().trim();

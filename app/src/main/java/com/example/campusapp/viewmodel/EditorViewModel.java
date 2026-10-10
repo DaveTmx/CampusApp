@@ -1,5 +1,6 @@
 package com.example.campusapp.viewmodel;
 
+import androidx.datastore.core.Data;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
@@ -205,7 +206,7 @@ public class EditorViewModel extends ViewModel {
         busy.setValue(true);
         repository.getStudent(id, result -> {
             busy.postValue(false);
-            if (result.data == null) {
+            if (result.Data == null) {
                 message.postValue(new Event<>(StatusMessages.forStatus(result.status)));
                 if (result.status == Result.Status.NOT_FOUND) {
                     finished.postValue(true);

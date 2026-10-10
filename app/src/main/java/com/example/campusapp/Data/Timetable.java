@@ -1,4 +1,4 @@
-package com.example.campusapp.data;
+package com.example.campusapp.Data;
 
 import java.util.ArrayList;
 import java.util.Arrays;

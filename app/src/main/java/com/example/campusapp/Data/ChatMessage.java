@@ -1,4 +1,4 @@
-package com.example.campusapp.data;
+package com.example.campusapp.Data;
 
 /** A single message in a group's chat, visible only to members of that group. */
 public class ChatMessage {

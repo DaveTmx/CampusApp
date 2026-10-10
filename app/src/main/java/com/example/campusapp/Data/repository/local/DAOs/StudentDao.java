@@ -1,4 +1,4 @@
-package com.example.campusapp.Data.repository.local.remote.DAOs;
+package com.example.campusapp.Data.repository.local.DAOs;
 
 import androidx.room.Dao;
 import androidx.room.Insert;

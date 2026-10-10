@@ -1,4 +1,4 @@
-package com.example.campusapp.data;
+package com.example.campusapp.Data;
 
 /**
  * A single roster entry. `id` is an internal identifier that never changes,

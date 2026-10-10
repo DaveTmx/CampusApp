@@ -1,8 +1,9 @@
-package com.example.campusapp.data.repository;
+package com.example.campusapp.Data.repository;
 
 import androidx.lifecycle.LiveData;
 
-import com.example.campusapp.data.model.StudentPageResponse;
+import com.example.campusapp.Data.repository.FakeStudentRepository;
+import com.example.campusapp.Data.model.StudentPageResponse;
 
 /**
  * The contract the Integration/Testing team codes against.
@@ -24,8 +25,14 @@ public interface StudentRepository {
      * @return a LiveData that will emit exactly one {@link StudentPageResponse}
      *  once the (simulated or real) network call completes
      */
-    LiveData<StudentPageResponse> getStudents(String query, int page, int pageSize);
+    <StudentPageResponse> LiveData<StudentPageResponse> getStudents(String query, int page, int pageSize);
 
     /** Cancels whichever getStudents() call is currently in flight, if any. */
     void cancelPendingRequest();
+
+    void deleteStudent(String id, Object o);
+
+    void getStudent(String id, Object o);
+
+    void assignGroup(String studentId, String wantedGroup, Object o);
 }

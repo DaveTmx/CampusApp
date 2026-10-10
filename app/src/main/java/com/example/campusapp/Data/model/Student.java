@@ -1,4 +1,4 @@
-package com.example.campusapp.data.model;
+package com.example.campusapp.Data.model;
 
 /**
  * Plain data holder for one student row. Same shape whether it came from
@@ -11,6 +11,11 @@ public class Student {
     private final String fullName;
     private final String programme;      // "CS", "IT", or "DS"
     private final String labGroup;       // "G01"..."G04", or "UNASSIGNED"
+    public String number;
+    public String name;
+    public String group;
+    public String program;
+    public String id;
 
     public Student(String studentId, String studentNumber, String fullName,
                    String programme, String labGroup) {

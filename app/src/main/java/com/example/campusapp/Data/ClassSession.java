@@ -1,4 +1,4 @@
-package com.example.campusapp.data;
+package com.example.campusapp.Data;
 
 /** One timetable entry: a class on a given day. */
 public class ClassSession {

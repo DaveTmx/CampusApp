@@ -4,9 +4,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.campusapp.data.model.Student;
-import com.example.campusapp.data.model.StudentPageResponse;
-import com.example.campusapp.data.repository.FakeStudentRepository;
+import com.example.campusapp.Data.model.Student;
+import com.example.campusapp.Data.model.StudentPageResponse;
+import com.example.campusapp.Data.repository.FakeStudentRepository;
+import com.example.campusapp.Data.repository.local.StudentRepository;
 import com.example.campusapp.data.repository.StudentRepository;
 
 import java.util.ArrayList;
@@ -19,13 +20,13 @@ import java.util.List;
  * it, needs to change, because both implement the same StudentRepository
  * contract.
  */
-public class LecturerRosterViewModel extends ViewModel {
+public class LecturerRosterViewModel<StudentRepository> extends ViewModel {
 
     private static final int PAGE_SIZE = 20;
 
     // TODO(integration): replace with RealStudentRepository(apiService) when the
     // backend endpoint is live. Everything below stays the same.
-    private final StudentRepository repository = new FakeStudentRepository();
+    private final com.example.campusapp.data.repository.StudentRepository repository = new FakeStudentRepository();
 
     private final MediatorLiveData<List<Student>> visibleStudents = new MediatorLiveData<>();
     private final MediatorLiveData<Boolean> isLoading = new MediatorLiveData<>();

@@ -1,4 +1,4 @@
-package com.example.campusapp.data;
+package com.example.campusapp.Data;
 
 /**
  * A student-submitted request (e.g. "change my group", "correct my number")

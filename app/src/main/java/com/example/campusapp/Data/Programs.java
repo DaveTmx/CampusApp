@@ -1,4 +1,4 @@
-package com.example.campusapp.data;
+package com.example.campusapp.Data;
 
 /** The programs a student can be enrolled in. Shared by the registration and lecturer edit screens. */
 public final class Programs {

@@ -1,11 +1,11 @@
-package com.example.campusapp.data.repository;
+package com.example.campusapp.Data.repository;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.campusapp.data.model.Student;
-import com.example.campusapp.data.model.StudentPageResponse;
+import com.example.campusapp.Data.model.Student;
+import com.example.campusapp.Data.model.StudentPageResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *     (not just "ignores the old result later") — the same behaviour the
  *     real Retrofit Call.cancel() gives you.
  */
-public class FakeStudentRepository implements StudentRepository {
+public class FakeStudentRepository implements com.example.campusapp.data.repository.StudentRepository {
 
     private static final int SIMULATED_NETWORK_DELAY_MS = 700;
 

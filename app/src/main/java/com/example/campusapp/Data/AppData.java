@@ -1,7 +1,10 @@
-package com.example.campusapp.data;
+package com.example.campusapp.Data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import com.example.campusapp.data.Programs;
+import com.example.campusapp.data.Student;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,10 +39,10 @@ public class AppData {
     private static AppData instance;
 
     private final SharedPreferences prefs;
-    private final List<Student> students = new ArrayList<>();
-    private final List<PendingChange> pendingChanges = new ArrayList<>();
-    private final List<Notice> notices = new ArrayList<>();
-    private final List<ChatMessage> messages = new ArrayList<>();
+    private final List<com.example.campusapp.data.Student> students = new ArrayList<com.example.campusapp.data.Student>();
+    private final List<com.example.campusapp.data.PendingChange> pendingChanges = new ArrayList<>();
+    private final List<com.example.campusapp.data.Notice> notices = new ArrayList<>();
+    private final List<com.example.campusapp.data.ChatMessage> messages = new ArrayList<>();
 
     private long nextPendingId = 1;
     private long nextNoticeId = 1;
@@ -65,36 +68,36 @@ public class AppData {
     // ---------- seed data (matches the original mockup) ----------
 
     private void seedDefaults() {
-        students.add(new Student(CURRENT_STUDENT_ID, "20241908", "Chileshe Banda", "G02", Programs.COMPUTER_SCIENCE));
-        students.add(new Student("s-20242203", "20242203", "Mwansa Phiri", "G01", Programs.INFORMATION_TECHNOLOGY));
-        students.add(new Student("s-20240891", "20240891", "Sipho Tembo", "G02", Programs.CYBER_SECURITY));
+        students.add(new com.example.campusapp.data.Student(CURRENT_STUDENT_ID, "20241908", "Chileshe Banda", "G02", com.example.campusapp.data.Programs.COMPUTER_SCIENCE));
+        students.add(new com.example.campusapp.data.Student("s-20242203", "20242203", "Mwansa Phiri", "G01", Programs.INFORMATION_TECHNOLOGY));
+        students.add(new com.example.campusapp.data.Student("s-20240891", "20240891", "Sipho Tembo", "G02", Programs.CYBER_SECURITY));
 
-        pendingChanges.add(new PendingChange(nextPendingId++, "s-20242203", "Mwansa Phiri",
+        pendingChanges.add(new com.example.campusapp.data.PendingChange(nextPendingId++, "s-20242203", "Mwansa Phiri",
                 "group", "Group", "G03", "Pending"));
 
-        notices.add(new Notice(nextNoticeId++, "Library Closed Saturday",
+        notices.add(new com.example.campusapp.data.Notice(nextNoticeId++, "Library Closed Saturday",
                 "The main library will be closed for quarterly maintenance.", "Admin", true));
-        notices.add(new Notice(nextNoticeId++, "Exam Timetable Posted",
+        notices.add(new com.example.campusapp.data.Notice(nextNoticeId++, "Exam Timetable Posted",
                 "The draft timetable for Semester 1 exams is now ready.", "Academic", false));
-        notices.add(new Notice(nextNoticeId++, "Fee Deadline Extended",
+        notices.add(new com.example.campusapp.data.Notice(nextNoticeId++, "Fee Deadline Extended",
                 "Registration fee payment deadline extended to next Friday.", "Urgent", false));
 
         long now = System.currentTimeMillis();
-        messages.add(new ChatMessage(nextMessageId++, "G02", "Sipho Tembo",
+        messages.add(new com.example.campusapp.data.ChatMessage(nextMessageId++, "G02", "Sipho Tembo",
                 "Hey team, did everyone finish the ER diagram for the DB project?", now - 3_600_000));
-        messages.add(new ChatMessage(nextMessageId++, "G02", "Chileshe Banda",
+        messages.add(new com.example.campusapp.data.ChatMessage(nextMessageId++, "G02", "Chileshe Banda",
                 "Almost done on my side, will share tonight.", now - 1_800_000));
     }
 
     // ---------- students (lecturer: add / edit / delete) ----------
 
-    public List<Student> getStudents() {
+    public List<com.example.campusapp.data.Student> getStudents() {
         return students;
     }
 
     /** Creates a new roster entry with a fresh internal id. Used by the lecturer's "+" button. */
-    public Student addStudent(String number, String name, String group, String program) {
-        Student student = new Student("s-new-" + (nextStudentSeq++), number, name, group, program);
+    public com.example.campusapp.data.Student addStudent(String number, String name, String group, String program) {
+        com.example.campusapp.data.Student student = new Student("s-new-" + (nextStudentSeq++), number, name, group, program);
         students.add(student);
         save();
         return student;
@@ -102,7 +105,7 @@ public class AppData {
 
     /** Updates the student with this internal id in place (name/number/group can all change). */
     public void updateStudent(String id, String number, String name, String group, String program) {
-        Student student = findStudentById(id);
+        com.example.campusapp.data.Student student = findStudentById(id);
         if (student != null) {
             student.number = number;
             student.name = name;
@@ -113,22 +116,22 @@ public class AppData {
     }
 
     public void deleteStudent(String id) {
-        Student student = findStudentById(id);
+        com.example.campusapp.data.Student student = findStudentById(id);
         if (student != null) {
             students.remove(student);
             save();
         }
     }
 
-    public Student findStudentByNumber(String number) {
-        for (Student s : students) {
+    public com.example.campusapp.data.Student findStudentByNumber(String number) {
+        for (com.example.campusapp.data.Student s : students) {
             if (s.number.equals(number)) return s;
         }
         return null;
     }
 
-    public Student findStudentById(String id) {
-        for (Student s : students) {
+    public com.example.campusapp.data.Student findStudentById(String id) {
+        for (com.example.campusapp.data.Student s : students) {
             if (s.id.equals(id)) return s;
         }
         return null;
@@ -136,23 +139,23 @@ public class AppData {
 
     // ---------- pending changes (student requests -> lecturer approval) ----------
 
-    public List<PendingChange> getPendingChanges() {
+    public List<com.example.campusapp.data.PendingChange> getPendingChanges() {
         return pendingChanges;
     }
 
     public void addPendingChange(String studentId, String studentName,
                                   String field, String fieldLabel, String newValue) {
-        pendingChanges.add(new PendingChange(nextPendingId++, studentId, studentName,
+        pendingChanges.add(new com.example.campusapp.data.PendingChange(nextPendingId++, studentId, studentName,
                 field, fieldLabel, newValue, "Pending"));
         save();
     }
 
     /** Applies the requested change to the matching student, then removes it from the queue. */
     public void approvePendingChange(long id) {
-        PendingChange change = findPendingChange(id);
+        com.example.campusapp.data.PendingChange change = findPendingChange(id);
         if (change == null) return;
 
-        Student student = findStudentById(change.studentId);
+        com.example.campusapp.data.Student student = findStudentById(change.studentId);
         if (student != null) {
             if ("group".equals(change.field)) {
                 student.group = change.newValue;
@@ -168,7 +171,7 @@ public class AppData {
 
     /** Discards the request without changing the student record. */
     public void rejectPendingChange(long id) {
-        PendingChange change = findPendingChange(id);
+        com.example.campusapp.data.PendingChange change = findPendingChange(id);
         if (change != null) {
             pendingChanges.remove(change);
             save();
@@ -176,14 +179,14 @@ public class AppData {
     }
 
     public void approveAllPendingChanges() {
-        List<PendingChange> copy = new ArrayList<>(pendingChanges);
-        for (PendingChange change : copy) {
+        List<com.example.campusapp.data.PendingChange> copy = new ArrayList<>(pendingChanges);
+        for (com.example.campusapp.data.PendingChange change : copy) {
             approvePendingChange(change.id);
         }
     }
 
-    private PendingChange findPendingChange(long id) {
-        for (PendingChange c : pendingChanges) {
+    private com.example.campusapp.data.PendingChange findPendingChange(long id) {
+        for (com.example.campusapp.data.PendingChange c : pendingChanges) {
             if (c.id == id) return c;
         }
         return null;
@@ -191,28 +194,28 @@ public class AppData {
 
     // ---------- notices (lecturer: post updates) ----------
 
-    public List<Notice> getNotices() {
+    public List<com.example.campusapp.data.Notice> getNotices() {
         return notices;
     }
 
     public void addNotice(String title, String body, String category) {
-        notices.add(0, new Notice(nextNoticeId++, title, body, category, true));
+        notices.add(0, new com.example.campusapp.data.Notice(nextNoticeId++, title, body, category, true));
         save();
     }
 
     // ---------- group chat (students: chat & share updates within their own group) ----------
 
     /** Returns only the messages posted to this group, oldest first. */
-    public List<ChatMessage> getMessagesForGroup(String group) {
-        List<ChatMessage> result = new ArrayList<>();
-        for (ChatMessage m : messages) {
+    public List<com.example.campusapp.data.ChatMessage> getMessagesForGroup(String group) {
+        List<com.example.campusapp.data.ChatMessage> result = new ArrayList<>();
+        for (com.example.campusapp.data.ChatMessage m : messages) {
             if (m.group.equals(group)) result.add(m);
         }
         return result;
     }
 
     public void addChatMessage(String group, String senderName, String text) {
-        messages.add(new ChatMessage(nextMessageId++, group, senderName, text, System.currentTimeMillis()));
+        messages.add(new com.example.campusapp.data.ChatMessage(nextMessageId++, group, senderName, text, System.currentTimeMillis()));
         save();
     }
 
@@ -223,7 +226,7 @@ public class AppData {
             JSONArray studentsArray = new JSONArray(prefs.getString(KEY_STUDENTS, "[]"));
             for (int i = 0; i < studentsArray.length(); i++) {
                 JSONObject o = studentsArray.getJSONObject(i);
-                students.add(new Student(o.getString("id"), o.getString("number"), o.getString("name"), o.getString("group"),
+                students.add(new com.example.campusapp.data.Student(o.getString("id"), o.getString("number"), o.getString("name"), o.getString("group"),
                         o.optString("program", Programs.DEFAULT)));
             }
 
@@ -231,7 +234,7 @@ public class AppData {
             for (int i = 0; i < pendingArray.length(); i++) {
                 JSONObject o = pendingArray.getJSONObject(i);
                 long id = o.getLong("id");
-                pendingChanges.add(new PendingChange(id, o.getString("studentId"), o.getString("studentName"),
+                pendingChanges.add(new com.example.campusapp.data.PendingChange(id, o.getString("studentId"), o.getString("studentName"),
                         o.getString("field"), o.getString("fieldLabel"), o.getString("newValue"), o.getString("status")));
                 if (id >= nextPendingId) nextPendingId = id + 1;
             }
@@ -240,7 +243,7 @@ public class AppData {
             for (int i = 0; i < noticesArray.length(); i++) {
                 JSONObject o = noticesArray.getJSONObject(i);
                 long id = o.getLong("id");
-                notices.add(new Notice(id, o.getString("title"), o.getString("body"),
+                notices.add(new com.example.campusapp.data.Notice(id, o.getString("title"), o.getString("body"),
                         o.getString("category"), o.getBoolean("isNew")));
                 if (id >= nextNoticeId) nextNoticeId = id + 1;
             }
@@ -249,13 +252,13 @@ public class AppData {
             for (int i = 0; i < messagesArray.length(); i++) {
                 JSONObject o = messagesArray.getJSONObject(i);
                 long id = o.getLong("id");
-                messages.add(new ChatMessage(id, o.getString("group"), o.getString("senderName"),
+                messages.add(new com.example.campusapp.data.ChatMessage(id, o.getString("group"), o.getString("senderName"),
                         o.getString("text"), o.getLong("timestamp")));
                 if (id >= nextMessageId) nextMessageId = id + 1;
             }
 
             // Keep the "add student" sequence past anything already persisted.
-            for (Student s : students) {
+            for (com.example.campusapp.data.Student s : students) {
                 if (s.id != null && s.id.startsWith("s-new-")) {
                     try {
                         long seq = Long.parseLong(s.id.substring("s-new-".length()));
@@ -272,7 +275,7 @@ public class AppData {
     private void save() {
         try {
             JSONArray studentsArray = new JSONArray();
-            for (Student s : students) {
+            for (com.example.campusapp.data.Student s : students) {
                 JSONObject o = new JSONObject();
                 o.put("id", s.id);
                 o.put("number", s.number);
@@ -283,7 +286,7 @@ public class AppData {
             }
 
             JSONArray pendingArray = new JSONArray();
-            for (PendingChange c : pendingChanges) {
+            for (com.example.campusapp.data.PendingChange c : pendingChanges) {
                 JSONObject o = new JSONObject();
                 o.put("id", c.id);
                 o.put("studentId", c.studentId);
@@ -296,7 +299,7 @@ public class AppData {
             }
 
             JSONArray noticesArray = new JSONArray();
-            for (Notice n : notices) {
+            for (com.example.campusapp.data.Notice n : notices) {
                 JSONObject o = new JSONObject();
                 o.put("id", n.id);
                 o.put("title", n.title);
@@ -307,7 +310,7 @@ public class AppData {
             }
 
             JSONArray messagesArray = new JSONArray();
-            for (ChatMessage m : messages) {
+            for (com.example.campusapp.data.ChatMessage m : messages) {
                 JSONObject o = new JSONObject();
                 o.put("id", m.id);
                 o.put("group", m.group);

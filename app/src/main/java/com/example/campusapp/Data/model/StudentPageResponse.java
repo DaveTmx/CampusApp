@@ -1,4 +1,4 @@
-package com.example.campusapp.data.model;
+package com.example.campusapp.Data.model;
 
 import java.util.Collections;
 import java.util.List;
