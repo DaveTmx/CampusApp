@@ -1,4 +1,4 @@
-package com.example.campusapp.Data.repository;
+package com.example.campusapp.data.repository;
 
 import androidx.lifecycle.LiveData;
 

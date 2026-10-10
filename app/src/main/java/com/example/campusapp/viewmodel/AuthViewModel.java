@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.campusapp.Data.repository.AuthRepository;
+import com.example.campusapp.data.repository.AuthRepository;
 import com.example.campusapp.R;
 import com.example.campusapp.model.Session;
 import com.example.campusapp.util.Validation;

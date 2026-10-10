@@ -3,8 +3,8 @@ package com.example.campusapp.viewmodel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.campusapp.Data.repository.RepoCallback;
-import com.example.campusapp.Data.repository.StudentRepository;
+import com.example.campusapp.data.repository.RepoCallback;
+import com.example.campusapp.data.repository.StudentRepository;
 import com.example.campusapp.model.GroupCount;
 import com.example.campusapp.model.Result;
 import com.example.campusapp.model.Student;

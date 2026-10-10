@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.viewmodel.CreationExtras;
 
-import com.example.campusapp.Data.repository.AuthRepository;
-import com.example.campusapp.Data.repository.StudentRepository;
+import com.example.campusapp.data.repository.AuthRepository;
+import com.example.campusapp.data.repository.StudentRepository;
 
 /**
  * Builds the ViewModels. Android can only create a ViewModel by itself when
