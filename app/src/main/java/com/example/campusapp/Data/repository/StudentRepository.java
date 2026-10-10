@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 
 import com.example.campusapp.Data.repository.FakeStudentRepository;
 import com.example.campusapp.Data.model.StudentPageResponse;
+import com.example.campusapp.model.Student;
 
 /**
  * The contract the Integration/Testing team codes against.
@@ -35,4 +36,8 @@ public interface StudentRepository {
     void getStudent(String id, Object o);
 
     void assignGroup(String studentId, String wantedGroup, Object o);
+
+    void createStudent(Student proposal, RepoCallback<Student> afterProfile);
+
+    void updateStudent(Student proposal, RepoCallback<Student> afterProfile);
 }
