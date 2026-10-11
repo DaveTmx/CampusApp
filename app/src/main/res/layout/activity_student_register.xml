@@ -42,7 +42,7 @@
 
         <TextView style="@style/InputLabel" android:text="Student Number"/>
         <EditText android:id="@+id/etStudentNumber" style="@style/InputField"
-            android:hint="e.g. 20241908" android:inputType="number"/>
+            android:hint="e.g. 202419080" android:inputType="number"/>
 
         <TextView style="@style/InputLabel" android:text="Email Address"/>
         <EditText android:id="@+id/etEmail" style="@style/InputField"
@@ -50,6 +50,10 @@
 
         <TextView style="@style/InputLabel" android:text="Program"/>
         <include layout="@layout/view_program_spinner"/>
+
+        <TextView style="@style/InputLabel" android:text="Claim Code"/>
+        <EditText android:id="@+id/etClaimCode" style="@style/InputField"
+            android:hint="Code from your lecturer" android:inputType="textCapCharacters"/>
 
         <TextView style="@style/InputLabel" android:text="Password"/>
         <EditText android:id="@+id/etPassword" style="@style/InputField"

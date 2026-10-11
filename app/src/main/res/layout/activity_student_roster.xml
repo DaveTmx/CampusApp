@@ -22,19 +22,22 @@
             android:orientation="horizontal" android:gravity="center_vertical"
             android:background="@drawable/bg_input" android:paddingLeft="12dp" android:paddingRight="12dp">
             <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/ic_search"/>
-            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
-                android:layout_marginStart="8dp" android:text="Search students by name or ID..." android:textColor="@color/text_gray_light" android:textSize="14sp"/>
+            <EditText android:id="@+id/etSearch" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1"
+                android:layout_marginStart="8dp" android:background="@null" android:hint="Search students by name or number..."
+                android:inputType="text" android:imeOptions="actionSearch" android:maxLines="1"
+                android:textColor="@color/text_dark" android:textColorHint="@color/text_gray_light" android:textSize="14sp"/>
         </LinearLayout>
 
         <HorizontalScrollView
             android:layout_width="match_parent" android:layout_height="wrap_content"
             android:paddingLeft="16dp" android:layout_marginBottom="10dp" android:scrollbars="none">
             <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal">
-                <TextView style="@style/FilterChip" android:text="All" android:textColor="@color/white" android:background="@drawable/bg_pill_selected"/>
-                <TextView style="@style/FilterChip" android:text="G1"/>
-                <TextView style="@style/FilterChip" android:text="G2"/>
-                <TextView style="@style/FilterChip" android:text="G3"/>
-                <TextView style="@style/FilterChip" android:text="Unassigned"/>
+                <TextView android:id="@+id/chipAll" style="@style/FilterChip" android:text="All" android:textColor="@color/white" android:background="@drawable/bg_pill_selected"/>
+                <TextView android:id="@+id/chipG01" style="@style/FilterChip" android:text="G01"/>
+                <TextView android:id="@+id/chipG02" style="@style/FilterChip" android:text="G02"/>
+                <TextView android:id="@+id/chipG03" style="@style/FilterChip" android:text="G03"/>
+                <TextView android:id="@+id/chipG04" style="@style/FilterChip" android:text="G04"/>
+                <TextView android:id="@+id/chipUnassigned" style="@style/FilterChip" android:text="Unassigned"/>
             </LinearLayout>
         </HorizontalScrollView>
 

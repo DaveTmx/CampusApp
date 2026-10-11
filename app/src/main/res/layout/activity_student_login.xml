@@ -33,10 +33,10 @@
         android:textSize="14sp"/>
 
     <TextView style="@style/InputLabel" android:text="Student Number"/>
-    <EditText style="@style/InputField" android:hint="e.g. 20241908" android:inputType="number"/>
+    <EditText android:id="@+id/etStudentNumber" style="@style/InputField" android:hint="e.g. 202419080" android:inputType="number"/>
 
     <TextView style="@style/InputLabel" android:text="Password"/>
-    <EditText style="@style/InputField" android:hint="••••••••" android:inputType="textPassword"/>
+    <EditText android:id="@+id/etPassword" style="@style/InputField" android:hint="••••••••" android:inputType="textPassword"/>
 
     <Button
         android:id="@+id/btnLogIn"
