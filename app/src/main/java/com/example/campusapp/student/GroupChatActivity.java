@@ -17,6 +17,8 @@ import com.example.campusapp.R;
 import com.example.campusapp.data.AppData;
 import com.example.campusapp.data.ChatMessage;
 import com.example.campusapp.data.Student;
+import com.example.campusapp.model.Session;
+import com.example.campusapp.util.ServiceLocator;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -42,7 +44,10 @@ public class GroupChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_group_chat);
 
         appData = AppData.getInstance(this);
-        Student me = appData.findStudentById(AppData.CURRENT_STUDENT_ID);
+        Session session = ServiceLocator.authRepository(this).currentSession();
+        String meId = (session != null && !session.isLecturer())
+                ? session.accountId : AppData.CURRENT_STUDENT_ID;
+        Student me = appData.findStudentById(meId);
         groupName = me != null ? me.group : "";
         myName = me != null ? me.name : "You";
 

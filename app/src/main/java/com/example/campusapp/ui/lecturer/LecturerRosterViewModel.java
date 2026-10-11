@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel;
 import com.example.campusapp.data.model.Student;
 import com.example.campusapp.data.model.StudentPageResponse;
 import com.example.campusapp.data.repository.FakeStudentRepository;
-import com.example.campusapp.data.repository.StudentRepository;
+import com.example.campusapp.data.repository.StudentPageRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  * Drives the Lecturer Roster screen (search + filter chips + pagination).
  * Swap FakeStudentRepository for RealStudentRepository once the backend is
  * ready — nothing else in this class, or in the Fragment/Activity observing
- * it, needs to change, because both implement the same StudentRepository
+ * it, needs to change, because both implement the same StudentPageRepository
  * contract.
  */
 public class LecturerRosterViewModel extends ViewModel {
@@ -25,7 +25,7 @@ public class LecturerRosterViewModel extends ViewModel {
 
     // TODO(integration): replace with RealStudentRepository(apiService) when the
     // backend endpoint is live. Everything below stays the same.
-    private final StudentRepository repository = new FakeStudentRepository();
+    private final StudentPageRepository repository = new FakeStudentRepository();
 
     private final MediatorLiveData<List<Student>> visibleStudents = new MediatorLiveData<>();
     private final MediatorLiveData<Boolean> isLoading = new MediatorLiveData<>();

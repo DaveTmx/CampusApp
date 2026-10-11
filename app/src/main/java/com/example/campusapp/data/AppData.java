@@ -65,9 +65,9 @@ public class AppData {
     // ---------- seed data (matches the original mockup) ----------
 
     private void seedDefaults() {
-        students.add(new Student(CURRENT_STUDENT_ID, "20241908", "Chileshe Banda", "G02", Programs.COMPUTER_SCIENCE));
-        students.add(new Student("s-20242203", "20242203", "Mwansa Phiri", "G01", Programs.INFORMATION_TECHNOLOGY));
-        students.add(new Student("s-20240891", "20240891", "Sipho Tembo", "G02", Programs.CYBER_SECURITY));
+        students.add(new Student(CURRENT_STUDENT_ID, "202419080", "Chileshe Banda", "G02", Programs.COMPUTER_SCIENCE));
+        students.add(new Student("s-20242203", "202422030", "Mwansa Phiri", "G01", Programs.INFORMATION_TECHNOLOGY));
+        students.add(new Student("s-20240891", "202408910", "Sipho Tembo", "G02", Programs.DATA_SCIENCE));
 
         pendingChanges.add(new PendingChange(nextPendingId++, "s-20242203", "Mwansa Phiri",
                 "group", "Group", "G03", "Pending"));
