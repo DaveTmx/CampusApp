@@ -1,13 +1,12 @@
 package com.example.campusapp.viewmodel;
 
-import androidx.datastore.core.Data;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.ViewModel;
 
-import com.example.campusapp.Data.repository.RepoCallback;
-import com.example.campusapp.Data.repository.StudentRepository;
+import com.example.campusapp.data.repository.RepoCallback;
+import com.example.campusapp.data.repository.StudentRepository;
 import com.example.campusapp.R;
 import com.example.campusapp.model.Result;
 import com.example.campusapp.model.Student;
@@ -206,7 +205,7 @@ public class EditorViewModel extends ViewModel {
         busy.setValue(true);
         repository.getStudent(id, result -> {
             busy.postValue(false);
-            if (result.Data == null) {
+            if (result.data == null) {
                 message.postValue(new Event<>(StatusMessages.forStatus(result.status)));
                 if (result.status == Result.Status.NOT_FOUND) {
                     finished.postValue(true);

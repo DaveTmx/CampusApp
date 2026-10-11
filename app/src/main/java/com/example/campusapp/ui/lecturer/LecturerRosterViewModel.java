@@ -5,31 +5,56 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+<<<<<<< HEAD
 import com.example.campusapp.Data.repository.StudentRosterRepository;
 import com.example.campusapp.model.Result;
 import com.example.campusapp.model.Student;
 import com.example.campusapp.model.StudentPage;
 import com.example.campusapp.util.Debouncer;
 import com.example.campusapp.viewmodel.FakeStudentRepository;
+=======
+import com.example.campusapp.data.model.Student;
+import com.example.campusapp.data.model.StudentPageResponse;
+import com.example.campusapp.data.repository.FakeStudentRepository;
+import com.example.campusapp.data.repository.StudentPageRepository;
+>>>>>>> 1fb9c74e30bb442d220357395ef3d7836e24c991
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+<<<<<<< HEAD
  * Drives the lecturer roster: search, debounce, pagination and state.
  * Stale results are blocked two ways:
  *  1. Each request gets a new id; only the newest id may update the screen.
  *  2. The previous request is cancelled when a new one starts.
  * Only the main thread calls this class, so setValue() is safe.
+=======
+ * Drives the Lecturer Roster screen (search + filter chips + pagination).
+ * Swap FakeStudentRepository for RealStudentRepository once the backend is
+ * ready — nothing else in this class, or in the Fragment/Activity observing
+ * it, needs to change, because both implement the same StudentPageRepository
+ * contract.
+>>>>>>> 1fb9c74e30bb442d220357395ef3d7836e24c991
  */
 public class LecturerRosterViewModel extends ViewModel {
 
     public static final int PAGE_SIZE = 20;
     public static final long SEARCH_DEBOUNCE_MS = 300;
 
+<<<<<<< HEAD
     private final StudentRosterRepository repository;
     private final Debouncer debouncer;
     private final MutableLiveData<RosterUiState> state = new MutableLiveData<>();
+=======
+    // TODO(integration): replace with RealStudentRepository(apiService) when the
+    // backend endpoint is live. Everything below stays the same.
+    private final StudentPageRepository repository = new FakeStudentRepository();
+
+    private final MediatorLiveData<List<Student>> visibleStudents = new MediatorLiveData<>();
+    private final MediatorLiveData<Boolean> isLoading = new MediatorLiveData<>();
+    private final MediatorLiveData<Boolean> isOffline = new MediatorLiveData<>();
+>>>>>>> 1fb9c74e30bb442d220357395ef3d7836e24c991
 
     private final List<Student> accumulated = new ArrayList<>();
     private RosterUiState.Status status = RosterUiState.Status.LOADING;

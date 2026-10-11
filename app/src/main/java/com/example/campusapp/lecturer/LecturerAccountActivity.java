@@ -8,11 +8,14 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.campusapp.BottomNavHelper;
 import com.example.campusapp.NavTab;
 import com.example.campusapp.R;
 import com.example.campusapp.RoleSelectActivity;
+import com.example.campusapp.util.ServiceLocator;
+import com.example.campusapp.viewmodel.AuthViewModel;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +25,9 @@ public class LecturerAccountActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lecturer_account);
+
+        AuthViewModel authViewModel = new ViewModelProvider(this, ServiceLocator.viewModelFactory(this))
+                .get(AuthViewModel.class);
 
         Map<NavTab, Class<?>> destinations = new HashMap<>();
         destinations.put(NavTab.HOME, LecturerHomeActivity.class);
@@ -49,6 +55,7 @@ public class LecturerAccountActivity extends AppCompatActivity {
             view.findViewById(R.id.btnCancel).setOnClickListener(v2 -> dialog.dismiss());
             view.findViewById(R.id.btnConfirmLogout).setOnClickListener(v2 -> {
                 dialog.dismiss();
+                authViewModel.signOut();
                 Intent intent = new Intent(this, RoleSelectActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
