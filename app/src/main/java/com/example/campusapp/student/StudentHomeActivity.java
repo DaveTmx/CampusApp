@@ -2,12 +2,16 @@ package com.example.campusapp.student;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.campusapp.BottomNavHelper;
+import com.example.campusapp.Data.AppData;
 import com.example.campusapp.NavTab;
+import com.example.campusapp.NoticeBell;
 import com.example.campusapp.R;
+import com.example.campusapp.Data.AppData;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,5 +35,16 @@ public class StudentHomeActivity extends AppCompatActivity {
 
         findViewById(R.id.cardStudyGroup).setOnClickListener(v ->
                 startActivity(new Intent(this, GroupChatActivity.class)));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Refresh the bell's red count every time this screen comes back into view.
+        View bell = findViewById(R.id.noticeBell);
+        AppData AppData = null;
+        int unread = NoticeBell.unreadCount(AppData.getInstance(this).getNotices());
+        NoticeBell.bind(bell, unread, () ->
+                startActivity(new Intent(this, NoticesActivity.class)));
     }
 }

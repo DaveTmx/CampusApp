@@ -23,7 +23,8 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.campusapp.BottomNavHelper;
-import com.example.campusapp.Data.repository.FakeStudentRepository; // swap for RealStudentRepository later
+import com.example.campusapp.viewmodel.FakeStudentRepository;
+import com.example.campusapp.viewmodel.FakeStudentRosterRepository; // swap for RealStudentRepository later
 import com.example.campusapp.NavTab;
 import com.example.campusapp.R;
 import com.example.campusapp.model.GroupCount;

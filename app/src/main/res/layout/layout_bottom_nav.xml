@@ -21,12 +21,7 @@
 
     <LinearLayout android:id="@+id/navMap" style="@style/BottomNavItem">
         <ImageView android:id="@+id/navMapIcon" style="@style/BottomNavIcon" android:src="@drawable/ic_map"/>
-        <TextView android:id="@+id/navMapLabel" style="@style/BottomNavLabel" android:text="Map"/>
-    </LinearLayout>
-
-    <LinearLayout android:id="@+id/navNotices" style="@style/BottomNavItem">
-        <ImageView android:id="@+id/navNoticesIcon" style="@style/BottomNavIcon" android:src="@drawable/ic_notices"/>
-        <TextView android:id="@+id/navNoticesLabel" style="@style/BottomNavLabel" android:text="Notices"/>
+        <TextView android:id="@+id/navMapLabel" style="@style/BottomNavLabel" android:text="@string/map"/>
     </LinearLayout>
 
     <LinearLayout android:id="@+id/navProfile" style="@style/BottomNavItem">
