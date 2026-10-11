@@ -1,11 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const authController = require('../controllers/authController');
+const { register, login } = require('../controllers/authController');
+const { protect } = require('../middleware/authMiddleware');
 
-// POST /api/auth/register
-router.post('/register', authController.register);
+// Public routes
+router.post('/register', register);
+router.post('/login', login);
 
-// POST /api/auth/login
-router.post('/login', authController.login);
+// Protected route example
+router.get('/me', protect, (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Access granted to protected route',
+    user: req.user
+  });
+});
 
 module.exports = router;
