@@ -1,4 +1,4 @@
-package com.example.campusapp.Data;
+package com.example.campusapp.data;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -13,11 +13,11 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.os.Looper;
 
-import com.example.campusapp.Data.local.dao.StudentDao;
-import com.example.campusapp.Data.local.entities.StudentEntity;
-import com.example.campusapp.Data.remote.ApiClient;
-import com.example.campusapp.Data.remote.ApiService;
-import com.example.campusapp.Data.repository.RealStudentRepository;
+import com.example.campusapp.data.local.dao.StudentDao;
+import com.example.campusapp.data.local.entities.StudentEntity;
+import com.example.campusapp.data.remote.ApiClient;
+import com.example.campusapp.data.remote.ApiService;
+import com.example.campusapp.data.repository.RealStudentRepository;
 import com.example.campusapp.model.Result;
 import com.example.campusapp.model.StudentPage;
 import com.example.campusapp.util.AppExecutors;

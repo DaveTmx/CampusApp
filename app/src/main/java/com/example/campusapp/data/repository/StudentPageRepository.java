@@ -1,47 +1,3 @@
-<<<<<<< HEAD:app/src/main/java/com/example/campusapp/Data/repository/StudentRepository.java
-package com.example.campusapp.Data.repository;
-
-import androidx.lifecycle.LiveData;
-
-import com.example.campusapp.Data.model.StudentPageResponse;
-import com.example.campusapp.model.Student;
-
-/**
- * The contract the Integration/Testing team codes against.
- * Agree on this interface with the Backend team EARLY (it mirrors the real
- * API's query params: query, page, pageSize). Once agreed, this team can
- * build the whole roster/pagination/search screen against
- * {@link FakeStudentRepository} without waiting for a single real endpoint.
- * When the real backend is ready, a RealStudentRepository implements this
- * same interface using Retrofit + Room, and the ViewModel/UI code above it
- * does not need to change at all.
- */
-public interface StudentRepository {
-
-    /**
-     * Fetches one page of students, optionally filtered by name/number.
-     * @param query     search text; empty string means "no filter"
-     * @param page      1-based page index
-     * @param pageSize  number of students per page (e.g. 20)
-     * @return a LiveData that will emit exactly one {@link StudentPageResponse}
-     *  once the (simulated or real) network call completes
-     */
-    <StudentPageResponse> LiveData<StudentPageResponse> getStudents(String query, int page, int pageSize);
-
-    /** Cancels whichever getStudents() call is currently in flight, if any. */
-    void cancelPendingRequest();
-
-    void deleteStudent(String id, Object o);
-
-    void getStudent(String id, Object o);
-
-    void assignGroup(String studentId, String wantedGroup, Object o);
-
-    void createStudent(Student proposal, RepoCallback<Student> afterProfile);
-
-    void updateStudent(Student proposal, RepoCallback<Student> afterProfile);
-}
-=======
 package com.example.campusapp.data.repository;
 
 import androidx.lifecycle.LiveData;
@@ -73,4 +29,3 @@ public interface StudentPageRepository {
     /** Cancels whichever getStudents() call is currently in flight, if any. */
     void cancelPendingRequest();
 }
->>>>>>> 1fb9c74e30bb442d220357395ef3d7836e24c991:app/src/main/java/com/example/campusapp/data/repository/StudentPageRepository.java

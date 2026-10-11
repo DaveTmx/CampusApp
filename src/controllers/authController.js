@@ -1,5 +1,7 @@
 const pool = require('../db/pool');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { JWT_SECRET } = require('../middleware/auth');
 
 // Register a new user
 exports.register = async (req, res) => {
@@ -58,13 +60,19 @@ exports.login = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid credentials' });
     }
 
+    // Protected routes (src/middleware/auth.js) need a signed token to check.
+    const role = user.role || 'student';
+    const token = jwt.sign({ id: user.id, email: user.email, role }, JWT_SECRET, { expiresIn: '12h' });
+
     res.status(200).json({
       success: true,
       message: 'Login successful',
+      token,
       user: {
         id: user.id,
         full_name: user.full_name,
-        email: user.email
+        email: user.email,
+        role
       }
     });
   } catch (error) {

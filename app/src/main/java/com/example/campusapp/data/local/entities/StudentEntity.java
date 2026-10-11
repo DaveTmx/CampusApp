@@ -1,4 +1,4 @@
-package com.example.campusapp.Data.local.entities;
+package com.example.campusapp.data.local.entities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

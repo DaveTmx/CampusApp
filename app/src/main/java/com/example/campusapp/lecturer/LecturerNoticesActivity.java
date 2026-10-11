@@ -13,8 +13,8 @@ import androidx.core.content.ContextCompat;
 import com.example.campusapp.BottomNavHelper;
 import com.example.campusapp.NavTab;
 import com.example.campusapp.R;
-import com.example.campusapp.Data.AppData;
-import com.example.campusapp.Data.Notice;
+import com.example.campusapp.data.AppData;
+import com.example.campusapp.data.Notice;
 
 import java.util.HashMap;
 import java.util.Map;

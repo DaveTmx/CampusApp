@@ -3,7 +3,7 @@ package com.example.campusapp;
 import android.view.View;
 import android.widget.TextView;
 
-import com.example.campusapp.Data.Notice;
+import com.example.campusapp.data.Notice;
 
 import java.util.List;
 

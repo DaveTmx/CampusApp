@@ -1,4 +1,4 @@
-package com.example.campusapp.Data.remote;
+package com.example.campusapp.data.remote;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

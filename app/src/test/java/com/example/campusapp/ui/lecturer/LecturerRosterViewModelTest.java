@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
-import com.example.campusapp.Data.repository.StudentRosterRepository;
+import com.example.campusapp.data.repository.StudentRosterRepository;
 import com.example.campusapp.model.Result;
 import com.example.campusapp.model.Student;
 import com.example.campusapp.model.StudentPage;

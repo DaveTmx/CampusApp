@@ -88,6 +88,7 @@
             android:exported="false" />
         <activity android:name=".lecturer.LecturerRosterActivity" android:exported="false"/>
         <activity android:name=".lecturer.LecturerSummaryActivity" android:exported="false"/>
+        <activity android:name=".ui.auth.ResetPasswordActivity" android:exported="false"/>
     </application>
 
 </manifest>

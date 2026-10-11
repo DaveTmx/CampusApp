@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.campusapp.Data.repository.StudentRosterRepository;
+import com.example.campusapp.data.repository.StudentRosterRepository;
 import com.example.campusapp.util.Debouncer;
 
 /**

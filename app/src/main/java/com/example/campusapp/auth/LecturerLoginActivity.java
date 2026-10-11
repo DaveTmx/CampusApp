@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.campusapp.R;
 import com.example.campusapp.lecturer.LecturerHomeActivity;
+import com.example.campusapp.ui.auth.ResetPasswordActivity;
 import com.example.campusapp.util.ServiceLocator;
 import com.example.campusapp.viewmodel.AuthViewModel;
 
@@ -28,6 +29,9 @@ public class LecturerLoginActivity extends AppCompatActivity {
         Button btnLogIn = findViewById(R.id.btnLogIn);
 
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+
+        findViewById(R.id.tvForgot).setOnClickListener(v ->
+                startActivity(new Intent(this, ResetPasswordActivity.class)));
 
         btnLogIn.setOnClickListener(v -> viewModel.signIn(
                 etEmail.getText().toString(), etPassword.getText().toString()));
