@@ -33,6 +33,7 @@ public class AppData {
     private static final String KEY_NOTICES = "notices";
     private static final String KEY_MESSAGES = "chat_messages";
     private static final String KEY_TIMETABLE = "timetable";
+    private static final String KEY_TIMETABLE_VERSION = "timetable_version";
 
     private static AppData instance;
 
@@ -342,8 +343,13 @@ public class AppData {
         for (TimetableEntry e : timetable) {
             if (e.day == day) result.add(e);
         }
-        java.util.Collections.sort(result, (a, b) -> a.time.compareTo(b.time));
+        java.util.Collections.sort(result, (a, b) -> sortKey(a.time).compareTo(sortKey(b.time)));
         return result;
+    }
+
+    /** "9:00 - 10:30" -> "09:00 - 10:30", so times sort in clock order. */
+    private static String sortKey(String time) {
+        return time.indexOf(':') == 1 ? "0" + time : time;
     }
 
     public TimetableEntry addClass(int day, String name, String time, String room, String type) {
@@ -372,8 +378,10 @@ public class AppData {
 
     private void loadTimetable() {
         String stored = prefs.getString(KEY_TIMETABLE, null);
-        if (stored == null) {
-            // First run: start from the sample timetable so the Schedule tab is not empty.
+        if (stored == null || prefs.getInt(KEY_TIMETABLE_VERSION, 0) < Timetable.VERSION) {
+            // First run, or the app ships a newer starting timetable: load the official one.
+            timetable.clear();
+            nextClassId = 1;
             for (int day = 0; day < Timetable.DAYS.length; day++) {
                 for (ClassSession s : Timetable.forDay(day)) {
                     timetable.add(new TimetableEntry(nextClassId++, day, s.name, s.time, s.room, s.type));
@@ -409,7 +417,8 @@ public class AppData {
                 o.put("type", e.type);
                 array.put(o);
             }
-            prefs.edit().putString(KEY_TIMETABLE, array.toString()).apply();
+            prefs.edit().putString(KEY_TIMETABLE, array.toString())
+                    .putInt(KEY_TIMETABLE_VERSION, Timetable.VERSION).apply();
         } catch (JSONException e) {
             // The in-memory timetable is still correct for this session.
         }
