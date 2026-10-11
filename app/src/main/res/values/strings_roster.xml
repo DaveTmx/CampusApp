@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="roster_title">Student Roster</string>
+    <string name="roster_search_hint">Search by name or student number</string>
+    <string name="roster_chip_all">All</string>
+    <string name="roster_chip_unassigned">Unassigned</string>
+    <string name="roster_loading">Loading students…</string>
+    <string name="roster_empty">No students match this search or filter.</string>
+    <string name="roster_offline">You are offline. Only limited saved results are shown.</string>
+    <string name="roster_cached_banner">Showing saved results. Connect to see everyone.</string>
+    <string name="roster_session_expired">Your session has expired. Sign in again to continue.</string>
+    <string name="roster_error">Could not load students. Check the connection and try again.</string>
+    <string name="roster_add_student">Add student</string>
+    <string name="roster_share_summary">Share group summary</string>
+    <string name="roster_edit">Edit</string>
+    <string name="roster_delete">Delete</string>
+    <string name="roster_edit_description">Edit %1$s</string>
+    <string name="roster_row_details">No: %1$s • Group: %2$s • %3$s</string>
+    <string name="summary_title">Group summary</string>
+    <string name="summary_share_subject">Lab group summary</string>
+    <string name="summary_share_chooser">Share group summary</string>
+    <string name="summary_not_ready">Group counts are still loading. Try again in a moment.</string>
+</resources>
