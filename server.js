@@ -1,3 +1,5 @@
+require('dotenv').config(); // load .env before anything reads process.env
+
 const express = require('express');
 const cors = require('cors');
 const pool = require('./src/db/pool');

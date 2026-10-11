@@ -3,8 +3,6 @@ package com.example.campusapp.lecturer;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -23,34 +21,45 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.campusapp.BottomNavHelper;
-import com.example.campusapp.viewmodel.FakeStudentRepository;
-import com.example.campusapp.viewmodel.FakeStudentRosterRepository; // swap for RealStudentRepository later
 import com.example.campusapp.NavTab;
 import com.example.campusapp.R;
+import com.example.campusapp.data.repository.FakeStudentRosterRepository; // swap for RealStudentRepository later
 import com.example.campusapp.model.GroupCount;
 import com.example.campusapp.model.Student;
 import com.example.campusapp.ui.lecturer.LecturerRosterViewModel;
+import com.example.campusapp.ui.lecturer.LecturerRosterViewModelFactory;
+import com.example.campusapp.ui.lecturer.RosterUiState;
+import com.example.campusapp.util.AppExecutors;
+import com.example.campusapp.viewmodel.EditorViewModel;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Paged, searchable lecturer roster driven by LecturerRosterViewModel.
+ * The group chips filter the loaded rows on screen.
+ */
 public class LecturerRosterActivity extends AppCompatActivity {
 
-    private static final long SEARCH_DEBOUNCE_MS = 300;
+    /** Chip value for students with no confirmed group. */
+    private static final String UNASSIGNED = "UNASSIGNED";
+    private static final String[] GROUPS = {"G01", "G02", "G03", "G04"};
 
     private LecturerRosterViewModel viewModel;
     private RosterAdapter adapter;
-    private TextInputEditText searchBox;
     private TextView statusText;
     private TextView cachedBanner;
 
-    private final Handler handler = new Handler(Looper.getMainLooper());
-    private final Runnable applySearch =
-            () -> viewModel.setQuery(String.valueOf(searchBox.getText()));
+    /** The last state from the ViewModel. */
+    private RosterUiState lastState;
+    /** null = "All". */
+    private String groupFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,10 +67,10 @@ public class LecturerRosterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lecturer_roster);
 
         viewModel = new ViewModelProvider(this,
-                new LecturerRosterViewModel.Factory(new FakeStudentRepository()))
+                new LecturerRosterViewModelFactory(new FakeStudentRosterRepository(AppExecutors.get())))
                 .get(LecturerRosterViewModel.class);
 
-        searchBox = findViewById(R.id.etSearch);
+        TextInputEditText searchBox = findViewById(R.id.etSearch);
         statusText = findViewById(R.id.tvStatus);
         cachedBanner = findViewById(R.id.tvCachedBanner);
         RecyclerView list = findViewById(R.id.rvRoster);
@@ -77,33 +86,36 @@ public class LecturerRosterActivity extends AppCompatActivity {
                 }
                 LinearLayoutManager lm = (LinearLayoutManager) rv.getLayoutManager();
                 if (lm != null && lm.findLastVisibleItemPosition() >= adapter.getItemCount() - 5) {
-                    viewModel.loadNextPageIfNeeded();
+                    viewModel.onLoadNextPage();
                 }
             }
         });
 
-        // Debounce: restart the timer on each keystroke, search once the typing pauses.
+        // The ViewModel debounces, so every keystroke can be passed straight through.
         searchBox.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
-                handler.removeCallbacks(applySearch);
-                handler.postDelayed(applySearch, SEARCH_DEBOUNCE_MS);
+                viewModel.onQueryChanged(String.valueOf(s));
             }
             @Override public void afterTextChanged(Editable s) { }
         });
 
         ChipGroup chips = findViewById(R.id.chipGroupGroups);
         chips.setOnCheckedStateChangeListener((group, checkedIds) -> {
-            if (!checkedIds.isEmpty()) {
-                viewModel.setFilters(null, groupForChip(checkedIds.get(0)));
+            groupFilter = checkedIds.isEmpty() ? null : groupForChip(checkedIds.get(0));
+            render();
+        });
+
+        statusText.setOnClickListener(v -> {
+            if (lastState != null && lastState.status == RosterUiState.Status.ERROR) {
+                viewModel.retry();
             }
         });
 
-        viewModel.getStudents().observe(this, adapter::submitList);
-        viewModel.getUiState().observe(this, this::showState);
-        viewModel.getFromCache().observe(this, cached ->
-                cachedBanner.setVisibility(Boolean.TRUE.equals(cached) ? View.VISIBLE : View.GONE));
-        viewModel.getGroupCounts().observe(this, counts -> { }); // keep the counts hot for Share
+        viewModel.getState().observe(this, state -> {
+            lastState = state;
+            render();
+        });
 
         findViewById(R.id.fabAdd).setOnClickListener(v ->
                 startActivity(new Intent(this, EditStudentActivity.class)));
@@ -117,28 +129,58 @@ public class LecturerRosterActivity extends AppCompatActivity {
         new BottomNavHelper(this, findViewById(R.id.bottomNavInclude), NavTab.PROFILE, destinations);
     }
 
-    @Override
-    protected void onDestroy() {
-        handler.removeCallbacks(applySearch);
-        super.onDestroy();
-    }
-
     /** Wired from android:onClick in the layout. */
     public void onShareSummaryClicked(View v) {
-        List<GroupCount> counts = viewModel.getGroupCounts().getValue();
-        if (counts == null) {
+        // Counts are only complete once every page has been loaded.
+        if (lastState == null || lastState.status == RosterUiState.Status.LOADING || lastState.hasMore) {
             Toast.makeText(this, R.string.summary_not_ready, Toast.LENGTH_SHORT).show();
             return;
         }
         Intent intent = new Intent(this, LecturerSummaryActivity.class);
         intent.putExtra(LecturerSummaryActivity.EXTRA_SUMMARY,
-                LecturerRosterViewModel.buildShareSummary(counts));
+                buildShareSummary(countGroups(lastState.students)));
         startActivity(intent);
+    }
+
+    private void render() {
+        if (lastState == null) {
+            return;
+        }
+        List<Student> visible = new ArrayList<>();
+        for (Student s : lastState.students) {
+            if (matchesGroup(s)) {
+                visible.add(s);
+            }
+        }
+        adapter.submitList(visible);
+        cachedBanner.setVisibility(
+                lastState.status == RosterUiState.Status.OFFLINE ? View.VISIBLE : View.GONE);
+
+        RosterUiState.Status status = lastState.status;
+        if (status == RosterUiState.Status.SUCCESS && visible.isEmpty()) {
+            status = RosterUiState.Status.EMPTY; // the group filter hid every row
+        }
+        if (status == RosterUiState.Status.SUCCESS || status == RosterUiState.Status.OFFLINE) {
+            statusText.setVisibility(View.GONE);
+        } else {
+            statusText.setText(messageFor(status));
+            statusText.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private boolean matchesGroup(Student s) {
+        if (groupFilter == null) {
+            return true;
+        }
+        if (UNASSIGNED.equals(groupFilter)) {
+            return s.confirmedGroup == null;
+        }
+        return groupFilter.equals(s.confirmedGroup);
     }
 
     private void openEditor(Student student) {
         Intent intent = new Intent(this, EditStudentActivity.class);
-        intent.putExtra(EditStudentActivity.EXTRA_STUDENT_ID, student.studentId);
+        intent.putExtra(EditorViewModel.EXTRA_STUDENT_ID, student.studentId);
         startActivity(intent);
     }
 
@@ -148,17 +190,8 @@ public class LecturerRosterActivity extends AppCompatActivity {
         Toast.makeText(this, "Delete is not wired yet", Toast.LENGTH_SHORT).show();
     }
 
-    private void showState(LecturerRosterViewModel.UiState state) {
-        if (state == LecturerRosterViewModel.UiState.CONTENT) {
-            statusText.setVisibility(View.GONE);
-            return;
-        }
-        statusText.setText(messageFor(state));
-        statusText.setVisibility(View.VISIBLE);
-    }
-
-    private int messageFor(LecturerRosterViewModel.UiState state) {
-        switch (state) {
+    private static int messageFor(RosterUiState.Status status) {
+        switch (status) {
             case EMPTY:           return R.string.roster_empty;
             case OFFLINE:         return R.string.roster_offline;
             case SESSION_EXPIRED: return R.string.roster_session_expired;
@@ -173,8 +206,34 @@ public class LecturerRosterActivity extends AppCompatActivity {
         if (chipId == R.id.chipG02) return "G02";
         if (chipId == R.id.chipG03) return "G03";
         if (chipId == R.id.chipG04) return "G04";
-        if (chipId == R.id.chipUnassigned) return LecturerRosterViewModel.UNASSIGNED;
+        if (chipId == R.id.chipUnassigned) return UNASSIGNED;
         return null; // "All"
+    }
+
+    private static List<GroupCount> countGroups(List<Student> students) {
+        Map<String, Integer> counts = new LinkedHashMap<>();
+        for (String g : GROUPS) {
+            counts.put(g, 0);
+        }
+        for (Student s : students) {
+            if (s.confirmedGroup != null && counts.containsKey(s.confirmedGroup)) {
+                counts.put(s.confirmedGroup, counts.get(s.confirmedGroup) + 1);
+            }
+        }
+        List<GroupCount> out = new ArrayList<>();
+        for (Map.Entry<String, Integer> e : counts.entrySet()) {
+            out.add(new GroupCount(e.getKey(), e.getValue()));
+        }
+        return out;
+    }
+
+    /** Only group labels and counts: no names or numbers leave the app. */
+    private static String buildShareSummary(List<GroupCount> counts) {
+        StringBuilder sb = new StringBuilder();
+        for (GroupCount c : counts) {
+            sb.append(c.group).append(": ").append(c.count).append('/').append(GroupCount.CAPACITY).append('\n');
+        }
+        return sb.toString().trim();
     }
 
     // ----- adapter ------------------------------------------------------------

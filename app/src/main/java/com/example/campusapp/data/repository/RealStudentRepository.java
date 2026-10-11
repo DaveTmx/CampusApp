@@ -1,9 +1,9 @@
-package com.example.campusapp.Data.repository;
+package com.example.campusapp.data.repository;
 
-import com.example.campusapp.Data.local.dao.StudentDao;
-import com.example.campusapp.Data.local.entities.StudentEntity;
-import com.example.campusapp.Data.remote.ApiService;
-import com.example.campusapp.Data.remote.StudentPageDto;
+import com.example.campusapp.data.local.dao.StudentDao;
+import com.example.campusapp.data.local.entities.StudentEntity;
+import com.example.campusapp.data.remote.ApiService;
+import com.example.campusapp.data.remote.StudentPageDto;
 import com.example.campusapp.model.Result;
 import com.example.campusapp.model.Student;
 import com.example.campusapp.model.StudentPage;

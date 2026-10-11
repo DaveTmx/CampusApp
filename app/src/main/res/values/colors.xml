@@ -20,4 +20,6 @@
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="notice_orange">#F97316</color>
+    <!-- Background of splash_logo.jpg; also the launcher icon background. -->
+    <color name="logo_navy">#0A2B56</color>
 </resources>

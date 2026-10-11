@@ -11,8 +11,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.campusapp.R;
-import com.example.campusapp.Data.AppData;
-import com.example.campusapp.Data.Programs;
+import com.example.campusapp.data.AppData;
+import com.example.campusapp.data.Programs;
 
 import java.util.ArrayList;
 import java.util.Arrays;

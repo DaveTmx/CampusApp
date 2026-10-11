@@ -1,33 +1,30 @@
+const pool = require('../db/pool');
 const bcrypt = require('bcryptjs');
-const db = require('../db/pool');
 const jwt = require('jsonwebtoken');
+const { JWT_SECRET } = require('../middleware/auth');
 
-// Register Controller
-const register = async (req, res) => {
+// Register a new user
+exports.register = async (req, res) => {
   const { full_name, email, password } = req.body;
 
   if (!full_name || !email || !password) {
-    return res.status(400).json({
-      success: false,
-      message: 'Please provide full name, email, and password'
-    });
+    return res.status(400).json({ success: false, message: 'Please provide full name, email, and password' });
   }
 
   try {
-    const [existingUser] = await db.execute('SELECT * FROM users WHERE email = ?', [email]);
-    if (existingUser.length > 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email already registered'
-      });
+    // Check if user already exists
+    const [existing] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+    if (existing.length > 0) {
+      return res.status(400).json({ success: false, message: 'Email is already registered' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-    const [result] = await db.execute(
-      'INSERT INTO users (full_name, email, password) VALUES (?, ?, ?)',
-      [full_name, email, hashedPassword]
-    );
+    // Insert user into database
+    const query = 'INSERT INTO users (full_name, email, password) VALUES (?, ?, ?)';
+    const [result] = await pool.query(query, [full_name, email, hashedPassword]);
 
     res.status(201).json({
       success: true,
@@ -35,49 +32,37 @@ const register = async (req, res) => {
       userId: result.insertId
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Server error',
-      error: error.message
-    });
+    console.error('Registration error:', error);
+    res.status(500).json({ success: false, message: 'Server error during registration' });
   }
 };
 
-// Login Controller
-const login = async (req, res) => {
+// Login user
+exports.login = async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({
-      success: false,
-      message: 'Please provide email and password'
-    });
+    return res.status(400).json({ success: false, message: 'Please provide email and password' });
   }
 
   try {
-    const [rows] = await db.execute('SELECT * FROM users WHERE email = ?', [email]);
+    // Find user by email
+    const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
     if (rows.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid credentials'
-      });
+      return res.status(400).json({ success: false, message: 'Invalid credentials' });
     }
 
     const user = rows[0];
 
+    // Check password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid credentials'
-      });
+      return res.status(400).json({ success: false, message: 'Invalid credentials' });
     }
 
-    const token = jwt.sign(
-      { id: user.id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
-    );
+    // Protected routes (src/middleware/auth.js) need a signed token to check.
+    const role = user.role || 'student';
+    const token = jwt.sign({ id: user.id, email: user.email, role }, JWT_SECRET, { expiresIn: '12h' });
 
     res.status(200).json({
       success: true,
@@ -86,19 +71,12 @@ const login = async (req, res) => {
       user: {
         id: user.id,
         full_name: user.full_name,
-        email: user.email
+        email: user.email,
+        role
       }
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Server error',
-      error: error.message
-    });
+    console.error('Login error:', error);
+    res.status(500).json({ success: false, message: 'Server error during login' });
   }
-};
-
-module.exports = {
-  register,
-  login
 };

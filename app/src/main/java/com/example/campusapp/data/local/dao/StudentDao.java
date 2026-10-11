@@ -1,11 +1,11 @@
-package com.example.campusapp.Data.local.dao;
+package com.example.campusapp.data.local.dao;
 
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
-import com.example.campusapp.Data.local.entities.StudentEntity;
+import com.example.campusapp.data.local.entities.StudentEntity;
 
 import java.util.List;
 
