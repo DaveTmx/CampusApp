@@ -141,6 +141,11 @@ public class LocalStudentRepository implements StudentRepository {
         callback.onResult(Result.of(status, toModel(created)));
     }
 
+    /** True when a student with this number is already on the roster. */
+    public boolean numberExists(String number) {
+        return findByNumber(number) != null;
+    }
+
     // ----- Student: own profile -----
 
     @Override

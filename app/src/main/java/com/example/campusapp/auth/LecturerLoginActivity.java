@@ -29,6 +29,8 @@ public class LecturerLoginActivity extends AppCompatActivity {
         Button btnLogIn = findViewById(R.id.btnLogIn);
 
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+        findViewById(R.id.tvForgot).setOnClickListener(v ->
+                startActivity(new Intent(this, ResetPasswordActivity.class)));
 
         findViewById(R.id.tvForgot).setOnClickListener(v ->
                 startActivity(new Intent(this, ResetPasswordActivity.class)));
@@ -46,7 +48,7 @@ public class LecturerLoginActivity extends AppCompatActivity {
                 return;
             }
             if (resId == R.string.error_username_required) {
-                etEmail.setError(getString(resId));
+                etEmail.setError("Enter your email or username");
             } else {
                 etPassword.setError(getString(resId));
             }

@@ -29,6 +29,8 @@ public class StudentLoginActivity extends AppCompatActivity {
         Button btnLogIn = findViewById(R.id.btnLogIn);
 
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
+        findViewById(R.id.tvForgot).setOnClickListener(v ->
+                startActivity(new Intent(this, ResetPasswordActivity.class)));
 
         findViewById(R.id.tvForgot).setOnClickListener(v ->
                 startActivity(new Intent(this, ResetPasswordActivity.class)));

@@ -34,6 +34,7 @@ public class LocalAuthRepository implements AuthRepository {
     /** Demo accounts that exist on first run, so the app can be tried straight away. */
     public static final String DEMO_STUDENT_NUMBER = "202419080";
     public static final String DEMO_STUDENT_PASSWORD = "student123";
+    public static final String DEMO_STUDENT_EMAIL = "chileshe.banda@example.com";
     public static final String DEMO_LECTURER_EMAIL = "muleba@gmail.com";
     public static final String DEMO_LECTURER_PASSWORD = "lecturer123";
     public static final String DEMO_LECTURER_ACCOUNT_ID = "lecturer-1";
@@ -50,9 +51,16 @@ public class LocalAuthRepository implements AuthRepository {
         prefs = context.getApplicationContext().getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         if (!prefs.contains(KEY_ACCOUNTS)) {
             createAccount(DEMO_STUDENT_NUMBER, DEMO_STUDENT_PASSWORD,
-                    AppData.CURRENT_STUDENT_ID, Session.ROLE_STUDENT);
+                    AppData.CURRENT_STUDENT_ID, Session.ROLE_STUDENT, DEMO_STUDENT_EMAIL);
             createAccount(DEMO_LECTURER_EMAIL, DEMO_LECTURER_PASSWORD,
-                    DEMO_LECTURER_ACCOUNT_ID, Session.ROLE_LECTURER);
+                    DEMO_LECTURER_ACCOUNT_ID, Session.ROLE_LECTURER, DEMO_LECTURER_EMAIL);
+        } else {
+            // Installs from before emails were stored: give the demo student one so
+            // "Forgot password" can be tried.
+            AccountInfo demo = findAccount(DEMO_STUDENT_NUMBER);
+            if (demo != null && demo.email.isEmpty()) {
+                setEmail(DEMO_STUDENT_NUMBER, DEMO_STUDENT_EMAIL);
+            }
         }
     }
 
@@ -106,6 +114,12 @@ public class LocalAuthRepository implements AuthRepository {
      */
     public synchronized boolean createAccount(String username, String password,
                                               String accountId, String role) {
+        return createAccount(username, password, accountId, role, "");
+    }
+
+    /** Same, and remembers the email address the account's one-time codes are sent to. */
+    public synchronized boolean createAccount(String username, String password,
+                                              String accountId, String role, String email) {
         String key = normalise(username);
         if (key.isEmpty() || password == null || find(key) != null) {
             return false;
@@ -119,12 +133,91 @@ public class LocalAuthRepository implements AuthRepository {
             account.put("hash", hash(salt, password));
             account.put("accountId", accountId);
             account.put("role", role);
+            account.put("email", normalise(email));
             accounts.put(account);
             prefs.edit().putString(KEY_ACCOUNTS, accounts.toString()).apply();
             return true;
         } catch (JSONException e) {
             return false;
         }
+    }
+
+    /** What forgot-password needs to know about an account. */
+    public static final class AccountInfo {
+        public final String username;
+        public final String email;
+
+        AccountInfo(String username, String email) {
+            this.username = username;
+            this.email = email;
+        }
+    }
+
+    /** Finds an account by email, username or student number. Null when there is none. */
+    public synchronized AccountInfo findAccount(String identifier) {
+        String key = normalise(identifier);
+        if (key.isEmpty()) {
+            return null;
+        }
+        try {
+            JSONArray accounts = new JSONArray(prefs.getString(KEY_ACCOUNTS, "[]"));
+            for (int i = 0; i < accounts.length(); i++) {
+                JSONObject account = accounts.getJSONObject(i);
+                String username = account.optString("username");
+                String email = account.optString("email");
+                if (email.isEmpty() && username.contains("@")) {
+                    email = username; // lecturers sign in with their email
+                }
+                if (key.equals(username) || key.equals(email)) {
+                    return new AccountInfo(username, email);
+                }
+            }
+        } catch (JSONException ignored) {
+            // Unreadable list: no account.
+        }
+        return null;
+    }
+
+    /** Stores the email address for an existing account. */
+    public synchronized void setEmail(String username, String email) {
+        String key = normalise(username);
+        try {
+            JSONArray accounts = new JSONArray(prefs.getString(KEY_ACCOUNTS, "[]"));
+            for (int i = 0; i < accounts.length(); i++) {
+                JSONObject account = accounts.getJSONObject(i);
+                if (key.equals(account.optString("username"))) {
+                    account.put("email", normalise(email));
+                    prefs.edit().putString(KEY_ACCOUNTS, accounts.toString()).apply();
+                    return;
+                }
+            }
+        } catch (JSONException ignored) {
+            // Nothing to update.
+        }
+    }
+
+    /** Sets a new password. The caller must already have checked the emailed code. */
+    public synchronized boolean resetPassword(String username, String newPassword) {
+        String key = normalise(username);
+        if (newPassword == null) {
+            return false;
+        }
+        try {
+            JSONArray accounts = new JSONArray(prefs.getString(KEY_ACCOUNTS, "[]"));
+            for (int i = 0; i < accounts.length(); i++) {
+                JSONObject account = accounts.getJSONObject(i);
+                if (key.equals(account.optString("username"))) {
+                    String salt = newSalt();
+                    account.put("salt", salt);
+                    account.put("hash", hash(salt, newPassword));
+                    prefs.edit().putString(KEY_ACCOUNTS, accounts.toString()).apply();
+                    return true;
+                }
+            }
+        } catch (JSONException ignored) {
+            // Fall through: not reset.
+        }
+        return false;
     }
 
     // ----- Internals -----
