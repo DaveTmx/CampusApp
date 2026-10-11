@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -84,6 +86,8 @@
         <activity
             android:name=".student.StudentScheduleActivity"
             android:exported="false" />
+        <activity android:name=".lecturer.LecturerRosterActivity" android:exported="false"/>
+        <activity android:name=".lecturer.LecturerSummaryActivity" android:exported="false"/>
     </application>
 
 </manifest>

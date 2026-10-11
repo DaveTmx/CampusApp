@@ -2,4 +2,6 @@
 <resources>
     <string name="app_name">Campus Connect</string>
     <string name="logo_desc">Campus Connect Logo</string>
+    <string name="notices_bell_description"><![CDATA[<string name=\"notices_bell_description\">Notices, %1$d unread</string>]]></string>
+    <string name="map">Map</string>
 </resources>

@@ -47,10 +47,6 @@ public class BottomNavHelper {
                 root.findViewById(R.id.navMap),
                 root.findViewById(R.id.navMapIcon),
                 root.findViewById(R.id.navMapLabel)));
-        items.put(NavTab.NOTICES, new NavItemViews(
-                root.findViewById(R.id.navNotices),
-                root.findViewById(R.id.navNoticesIcon),
-                root.findViewById(R.id.navNoticesLabel)));
         items.put(NavTab.PROFILE, new NavItemViews(
                 root.findViewById(R.id.navProfile),
                 root.findViewById(R.id.navProfileIcon),

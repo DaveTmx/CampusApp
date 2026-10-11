@@ -7,8 +7,8 @@ import androidx.lifecycle.ViewModel;
 import com.example.campusapp.data.repository.AuthRepository;
 import com.example.campusapp.R;
 import com.example.campusapp.model.Session;
+import com.example.campusapp.util.StatusMessages;
 import com.example.campusapp.util.Validation;
-
 /**
  * State for the sign-in screen, and for logging out from any screen.
  * The password is passed in, used once and never stored here.
@@ -67,8 +67,8 @@ public class AuthViewModel extends ViewModel {
             if (result.isSaved()) {
                 session.postValue(result.data);
             } else {
-                error.postValue(StatusMessages.forStatus(result.status));
-            }
+            error.postValue(StatusMessages.forStatus(result.status));
+        }
         });
     }
 

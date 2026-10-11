@@ -17,15 +17,15 @@
 
         <TextView
             android:id="@+id/tvName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
+            android:layout_width="match_parent"
+            android:layout_height="22dp"
+            android:textColor="@color/text_dark"
             android:textSize="15sp"
-            android:textColor="@color/text_dark"/>
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tvDetails"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:textSize="12sp"
@@ -35,13 +35,21 @@
     <Button
         android:id="@+id/btnEdit"
         style="@style/EditButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:text="Edit"/>
+        android:minHeight="48dp"
+        android:minWidth="48dp"
+        android:text="@string/roster_edit"/>
 
     <Button
         android:id="@+id/btnDelete"
         style="@style/EditButton"
-        android:text="Delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:minWidth="48dp"
+        android:text="@string/roster_delete"
         android:textColor="@color/badge_red"/>
 
 </LinearLayout>
