@@ -22,6 +22,7 @@ public final class ServiceLocator {
     private static LocalAuthRepository authRepository;
     private static LocalStudentRepository studentRepository;
     private static ViewModelFactory factory;
+    private static OtpService otpService;
 
     private ServiceLocator() {
     }
@@ -39,6 +40,14 @@ public final class ServiceLocator {
                     context.getApplicationContext(), authRepository(context));
         }
         return studentRepository;
+    }
+
+    /** Sends and checks the one-time codes used by registration and forgot-password. */
+    public static synchronized OtpService otpService() {
+        if (otpService == null) {
+            otpService = new OtpService();
+        }
+        return otpService;
     }
 
     public static synchronized ViewModelProvider.Factory viewModelFactory(Context context) {

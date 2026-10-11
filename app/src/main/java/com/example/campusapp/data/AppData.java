@@ -32,6 +32,8 @@ public class AppData {
     private static final String KEY_PENDING = "pending_changes";
     private static final String KEY_NOTICES = "notices";
     private static final String KEY_MESSAGES = "chat_messages";
+    private static final String KEY_TIMETABLE = "timetable";
+    private static final String KEY_TIMETABLE_VERSION = "timetable_version";
 
     private static AppData instance;
 
@@ -46,6 +48,9 @@ public class AppData {
     private long nextStudentSeq = 1;
     private long nextMessageId = 1;
 
+    private final List<TimetableEntry> timetable = new ArrayList<>();
+    private long nextClassId = 1;
+
     private AppData(Context context) {
         prefs = context.getApplicationContext().getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         load();
@@ -53,6 +58,7 @@ public class AppData {
             seedDefaults();
             save();
         }
+        loadTimetable();
     }
 
     public static synchronized AppData getInstance(Context context) {
@@ -326,6 +332,95 @@ public class AppData {
         } catch (JSONException e) {
             // If this ever throws, the in-memory lists are still correct for the
             // rest of this session — only the persisted copy would be stale.
+        }
+    }
+
+    // ---------- timetable (lecturer: add / remove / import; students: read) ----------
+
+    /** The classes on one day (0 = Mon ... 4 = Fri), earliest first. */
+    public List<TimetableEntry> getClassesForDay(int day) {
+        List<TimetableEntry> result = new ArrayList<>();
+        for (TimetableEntry e : timetable) {
+            if (e.day == day) result.add(e);
+        }
+        java.util.Collections.sort(result, (a, b) -> sortKey(a.time).compareTo(sortKey(b.time)));
+        return result;
+    }
+
+    /** "9:00 - 10:30" -> "09:00 - 10:30", so times sort in clock order. */
+    private static String sortKey(String time) {
+        return time.indexOf(':') == 1 ? "0" + time : time;
+    }
+
+    public TimetableEntry addClass(int day, String name, String time, String room, String type) {
+        TimetableEntry entry = new TimetableEntry(nextClassId++, day, name, time, room, type);
+        timetable.add(entry);
+        saveTimetable();
+        return entry;
+    }
+
+    public void deleteClass(long id) {
+        for (int i = timetable.size() - 1; i >= 0; i--) {
+            if (timetable.get(i).id == id) timetable.remove(i);
+        }
+        saveTimetable();
+    }
+
+    /** Replaces the whole timetable, for example with the contents of an imported CSV file. */
+    public void replaceTimetable(List<TimetableEntry> entries) {
+        timetable.clear();
+        nextClassId = 1;
+        for (TimetableEntry e : entries) {
+            timetable.add(new TimetableEntry(nextClassId++, e.day, e.name, e.time, e.room, e.type));
+        }
+        saveTimetable();
+    }
+
+    private void loadTimetable() {
+        String stored = prefs.getString(KEY_TIMETABLE, null);
+        if (stored == null || prefs.getInt(KEY_TIMETABLE_VERSION, 0) < Timetable.VERSION) {
+            // First run, or the app ships a newer starting timetable: load the official one.
+            timetable.clear();
+            nextClassId = 1;
+            for (int day = 0; day < Timetable.DAYS.length; day++) {
+                for (ClassSession s : Timetable.forDay(day)) {
+                    timetable.add(new TimetableEntry(nextClassId++, day, s.name, s.time, s.room, s.type));
+                }
+            }
+            saveTimetable();
+            return;
+        }
+        try {
+            JSONArray array = new JSONArray(stored);
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject o = array.getJSONObject(i);
+                long id = o.getLong("id");
+                timetable.add(new TimetableEntry(id, o.getInt("day"), o.getString("name"),
+                        o.getString("time"), o.getString("room"), o.getString("type")));
+                if (id >= nextClassId) nextClassId = id + 1;
+            }
+        } catch (JSONException e) {
+            timetable.clear(); // unreadable: show an empty timetable rather than crash
+        }
+    }
+
+    private void saveTimetable() {
+        try {
+            JSONArray array = new JSONArray();
+            for (TimetableEntry e : timetable) {
+                JSONObject o = new JSONObject();
+                o.put("id", e.id);
+                o.put("day", e.day);
+                o.put("name", e.name);
+                o.put("time", e.time);
+                o.put("room", e.room);
+                o.put("type", e.type);
+                array.put(o);
+            }
+            prefs.edit().putString(KEY_TIMETABLE, array.toString())
+                    .putInt(KEY_TIMETABLE_VERSION, Timetable.VERSION).apply();
+        } catch (JSONException e) {
+            // The in-memory timetable is still correct for this session.
         }
     }
 }

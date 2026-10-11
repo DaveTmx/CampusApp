@@ -12,8 +12,8 @@ import androidx.core.content.ContextCompat;
 import com.example.campusapp.BottomNavHelper;
 import com.example.campusapp.NavTab;
 import com.example.campusapp.R;
+import com.example.campusapp.data.AppData;
 import com.example.campusapp.data.ClassSession;
-import com.example.campusapp.data.Timetable;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -81,7 +81,7 @@ public class StudentScheduleActivity extends AppCompatActivity {
         classesContainer.removeAllViews();
         LayoutInflater inflater = LayoutInflater.from(this);
 
-        List<ClassSession> sessions = Timetable.forDay(selectedDay);
+        List<? extends ClassSession> sessions = AppData.getInstance(this).getClassesForDay(selectedDay);
         if (sessions.isEmpty()) {
             TextView empty = new TextView(this);
             empty.setText("No classes scheduled for this day.");

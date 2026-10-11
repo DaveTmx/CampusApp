@@ -8,13 +8,14 @@ public final class Programs {
     public static final String COMPUTER_SCIENCE = "Computer Science";
     public static final String INFORMATION_TECHNOLOGY = "Information Technology";
     public static final String DATA_SCIENCE = "Data Science";
+    public static final String CYBER_SECURITY = "Cyber Security";
 
     public static final String[] ALL = {
-            COMPUTER_SCIENCE, INFORMATION_TECHNOLOGY, DATA_SCIENCE
+            COMPUTER_SCIENCE, INFORMATION_TECHNOLOGY, DATA_SCIENCE, CYBER_SECURITY
     };
 
-    /** Same order as ALL: CS, IT, DS. */
-    public static final String[] CODES = {"CS", "IT", "DS"};
+    /** Same order as ALL: CS, IT, DS, CYB. */
+    public static final String[] CODES = {"CS", "IT", "DS", "CYB"};
 
     /** Used for records saved before programs existed. */
     public static final String DEFAULT = COMPUTER_SCIENCE;

@@ -51,10 +51,6 @@
         <TextView style="@style/InputLabel" android:text="Program"/>
         <include layout="@layout/view_program_spinner"/>
 
-        <TextView style="@style/InputLabel" android:text="Claim Code"/>
-        <EditText android:id="@+id/etClaimCode" style="@style/InputField"
-            android:hint="Code from your lecturer" android:inputType="textCapCharacters"/>
-
         <TextView style="@style/InputLabel" android:text="Password"/>
         <EditText android:id="@+id/etPassword" style="@style/InputField"
             android:hint="••••••••" android:inputType="textPassword"/>

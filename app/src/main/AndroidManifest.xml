@@ -33,6 +33,9 @@
             android:name=".auth.StudentLoginActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.auth.ResetPasswordActivity"
+            android:exported="false" />
+        <activity
             android:name=".auth.StudentRegisterActivity"
             android:exported="false" />
         <activity

@@ -5,14 +5,18 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * The weekly timetable shown on the student Schedule tab.
+ * The timetable the app starts with: Bachelor of Science in Computer Science (BScCS3),
+ * Fulltime, from the Mulungushi University information system (edurole.mu.ac.zm).
+ * Each class is shown as "course code (lecturer)". There are no classes on Saturday.
  *
- * Monday matches the original design. Tuesday to Friday are SAMPLE entries —
- * replace them with your real timetable (or load them from AppData/a server).
+ * Lecturers can change it in the app (add, remove or import a CSV); this is only the starting copy.
  */
 public final class Timetable {
 
     public static final String[] DAYS = {"Mon", "Tue", "Wed", "Thu", "Fri"};
+
+    /** Raise this when the starting timetable above changes, so installed apps pick it up. */
+    public static final int VERSION = 2;
 
     private Timetable() {}
 
@@ -21,26 +25,22 @@ public final class Timetable {
         switch (dayIndex) {
             case 0:
                 return Arrays.asList(
-                        new ClassSession("Database Systems", "09:00 - 10:30", "Room 102", "Lecture"),
-                        new ClassSession("Mobile Dev Lab", "11:00 - 12:30", "Lab 3", "Practical"),
-                        new ClassSession("Computer Networks", "14:00 - 15:30", "Room 204", "Lecture"));
+                        new ClassSession("ICT361 (Nyirenda E.)", "15:00 - 17:00", "Old Dinning Hall B", "Lecture"));
             case 1:
                 return Arrays.asList(
-                        new ClassSession("Software Engineering", "08:00 - 09:30", "Room 105", "Lecture"),
-                        new ClassSession("Data Structures & Algorithms", "10:00 - 11:30", "Room 204", "Lecture"),
-                        new ClassSession("Systems Analysis", "13:00 - 14:00", "Room 102", "Tutorial"));
+                        new ClassSession("ICS341 (Bwalya M.)", "07:00 - 09:00", "New Dinning Hall", "Lecture"));
             case 2:
                 return Arrays.asList(
-                        new ClassSession("Computer Networks Lab", "09:00 - 11:00", "Lab 2", "Practical"),
-                        new ClassSession("Database Systems", "11:30 - 13:00", "Room 102", "Lecture"));
+                        new ClassSession("ICT351 (Nyirenda E.)", "13:00 - 15:00", "SSS Block-C Rm 2", "Lecture"),
+                        new ClassSession("ICT381 (Mumba P.)", "15:00 - 17:00", "SSS Block-E Rm 1", "Lecture"));
             case 3:
                 return Arrays.asList(
-                        new ClassSession("Mobile Development", "09:00 - 10:30", "Room 301", "Lecture"),
-                        new ClassSession("Software Engineering Lab", "11:00 - 12:30", "Lab 3", "Practical"));
+                        new ClassSession("ICT381 (Mumba P.)", "07:00 - 09:00", "Multi Purpose Hall (next to NLT)", "Lecture"));
             case 4:
                 return Arrays.asList(
-                        new ClassSession("Computer Networks", "08:00 - 09:30", "Room 204", "Lecture"),
-                        new ClassSession("Research Methods", "10:00 - 11:30", "Room 110", "Lecture"));
+                        new ClassSession("ICT361 (Nyirenda E.)", "11:00 - 13:00", "SSS Block-B Rm 2", "Lecture"),
+                        new ClassSession("ICS341 (Bwalya M.)", "13:00 - 15:00", "New Dinning Hall", "Lecture"),
+                        new ClassSession("ICT351 (Nyirenda E.)", "15:00 - 17:00", "SSS Block-A Rm 2", "Lecture"));
             default:
                 return new ArrayList<>();
         }
