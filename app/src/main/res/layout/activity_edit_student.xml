@@ -42,10 +42,10 @@
         <EditText android:id="@+id/etName" style="@style/InputField" android:hint="e.g. Chileshe Mulenga"/>
 
         <TextView style="@style/InputLabel" android:text="Student Number"/>
-        <EditText android:id="@+id/etNumber" style="@style/InputField" android:hint="e.g. 20241908"/>
+        <EditText android:id="@+id/etNumber" style="@style/InputField" android:hint="e.g. 202419080" android:inputType="number"/>
 
         <TextView style="@style/InputLabel" android:text="Assigned Group"/>
-        <EditText android:id="@+id/etGroup" style="@style/InputField" android:hint="e.g. G02"/>
+        <EditText android:id="@+id/etGroup" style="@style/InputField" android:hint="G01 to G04, or leave blank for Unassigned" android:inputType="textCapCharacters"/>
 
         <TextView style="@style/InputLabel" android:text="Program"/>
         <include layout="@layout/view_program_spinner"/>

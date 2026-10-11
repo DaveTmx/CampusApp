@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  */
 public final class Validation {
 
-    public static final List<String> PROGRAMMES = Arrays.asList("CS", "IT", "DS");
+    public static final List<String> PROGRAMMES = Arrays.asList("CS", "IT", "DS", "CYB");
     public static final List<String> GROUPS = Arrays.asList("G01", "G02", "G03", "G04");
     public static final int MIN_PASSWORD_LENGTH = 8;
 

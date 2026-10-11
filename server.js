@@ -1,3 +1,5 @@
+require('dotenv').config(); // load .env before anything reads process.env
+
 const express = require('express');
 const cors = require('cors');
 const pool = require('./src/db/pool');
@@ -10,10 +12,14 @@ app.use(express.json());
 // Import Routes
 const groupRoutes = require('./src/routes/groupRoutes');
 const authRoutes = require('./src/routes/authRoutes'); // <-- Check this line
+const studentRoutes = require('./src/routes/studentRoutes');
+const operationsRoutes = require('./src/routes/operationsRoutes');
 
 // Mount Routes
 app.use('/api/groups', groupRoutes);
 app.use('/api/auth', authRoutes); // <-- Check this line
+app.use('/api/students', studentRoutes);
+app.use('/api/operations', operationsRoutes);
 
 // Health check endpoint
 app.get('/api/health', async (req, res) => {

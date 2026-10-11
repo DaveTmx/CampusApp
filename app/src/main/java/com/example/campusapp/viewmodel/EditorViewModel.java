@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.ViewModel;
 
-import com.example.campusapp.Data.repository.RepoCallback;
-import com.example.campusapp.Data.repository.StudentRepository;
+import com.example.campusapp.data.repository.RepoCallback;
+import com.example.campusapp.data.repository.StudentRepository;
 import com.example.campusapp.R;
 import com.example.campusapp.model.Result;
 import com.example.campusapp.model.Student;

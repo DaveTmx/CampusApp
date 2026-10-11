@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.CampusCompanion" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="Theme.CampusApp" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/primary_blue</item>
         <item name="colorPrimaryDark">@color/navy_dark</item>
         <item name="colorAccent">@color/primary_red</item>
