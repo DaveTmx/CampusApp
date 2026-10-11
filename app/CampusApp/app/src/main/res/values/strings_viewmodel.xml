@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Messages used by the ViewModels. Kept in their own file so strings.xml is not touched. -->
+<resources>
+    <string name="error_name_invalid">Enter a name of 2 to 100 letters</string>
+    <string name="error_number_invalid">Student number must be exactly 9 digits, with no spaces</string>
+    <string name="error_programme_required">Choose a programme</string>
+    <string name="error_group_invalid">Choose a lab group from the list</string>
+    <string name="error_claim_required">Enter your claim code</string>
+    <string name="error_claim_rejected">That claim code does not match this student number</string>
+    <string name="error_password_short">Password must be at least 8 characters</string>
+    <string name="error_username_required">Enter your username or student number</string>
+    <string name="error_password_required">Enter your password</string>
+
+    <string name="msg_saved_synced">Saved and synced</string>
+    <string name="msg_saved_pending">Saved on this phone. It will sync when you are online</string>
+    <string name="msg_draft_saved">Draft saved on this phone</string>
+    <string name="msg_duplicate_number">Another student already has this student number</string>
+    <string name="msg_group_full">That group is full (15 students). The previous group was kept</string>
+    <string name="msg_conflict">Someone else changed this record. Review both versions</string>
+    <string name="msg_server_rejected">The server rejected these details. Check the fields and try again</string>
+    <string name="msg_login_failed">Incorrect username or password</string>
+    <string name="msg_not_allowed">You do not have permission to do that</string>
+    <string name="msg_session_expired">Your session has expired. Sign in again</string>
+    <string name="msg_offline">You are offline. Try again when you are connected</string>
+    <string name="msg_student_deleted">This student has been deleted</string>
+    <string name="msg_deleted">Student deleted</string>
+    <string name="msg_correction_requested">Correction request sent to your lecturer</string>
+    <string name="msg_generic_error">Something went wrong. Try again</string>
+</resources>

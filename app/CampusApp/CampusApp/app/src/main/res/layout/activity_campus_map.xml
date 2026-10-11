@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background">
+
+    <LinearLayout style="@style/SectionHeader">
+        <TextView
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Find Offices" android:textColor="@color/white" android:textSize="22sp" android:textStyle="bold"/>
+        <TextView
+            android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp"
+            android:text="Campus map navigation" android:textColor="#B9C6DA" android:textSize="13sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent" android:layout_height="46dp"
+        android:layout_margin="16dp"
+        android:orientation="horizontal" android:gravity="center_vertical"
+        android:background="@drawable/bg_input" android:paddingLeft="12dp" android:paddingRight="12dp">
+        <ImageView android:layout_width="18dp" android:layout_height="18dp" android:src="@drawable/ic_search"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+            android:layout_marginStart="8dp" android:text="Search offices..." android:textColor="@color/text_gray_light" android:textSize="14sp"/>
+    </LinearLayout>
+
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
+            android:paddingLeft="16dp" android:paddingRight="16dp">
+
+            <LinearLayout style="@style/OfficeRow">
+                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_pin" android:layout_marginTop="2dp"/>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                    android:orientation="vertical" android:layout_marginStart="12dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Academic Registry" android:textStyle="bold" android:textSize="15sp" android:textColor="@color/text_dark"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp"
+                        android:text="Main Administration Block, 1st Floor" android:textSize="13sp" android:textColor="@color/text_gray"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout style="@style/OfficeRow">
+                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_pin" android:layout_marginTop="2dp"/>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                    android:orientation="vertical" android:layout_marginStart="12dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Bursar's Office" android:textStyle="bold" android:textSize="15sp" android:textColor="@color/text_dark"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp"
+                        android:text="Main Administration Block, Ground Floor" android:textSize="13sp" android:textColor="@color/text_gray"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout style="@style/OfficeRow">
+                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_pin" android:layout_marginTop="2dp"/>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                    android:orientation="vertical" android:layout_marginStart="12dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="University Library" android:textStyle="bold" android:textSize="15sp" android:textColor="@color/text_dark"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp"
+                        android:text="West Campus Plaza" android:textSize="13sp" android:textColor="@color/text_gray"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout style="@style/OfficeRow">
+                <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_pin" android:layout_marginTop="2dp"/>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                    android:orientation="vertical" android:layout_marginStart="12dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Dean of Students" android:textStyle="bold" android:textSize="15sp" android:textColor="@color/text_dark"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp"
+                        android:text="Student Center, Room 12" android:textSize="13sp" android:textColor="@color/text_gray"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvReportLocation"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="14dp" android:layout_marginBottom="16dp"
+                android:text="Report a wrong location"
+                android:textColor="@color/primary_blue" android:textSize="13sp"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <include layout="@layout/layout_bottom_nav" android:id="@+id/bottomNavInclude"/>
+
+</LinearLayout>
