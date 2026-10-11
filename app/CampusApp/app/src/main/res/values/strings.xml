@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Campus Connect</string>
+    <string name="logo_desc">Campus Connect Logo</string>
+    <string name="welcome_title">Welcome to Campus Portal</string>
+    <string name="btn_login">Sign In / Login</string>
+    <string name="btn_register">Register Student</string>
+    <string name="btn_notices">View Notices</string>
+    <string name="btn_schedule">View Schedule</string>
+    <string name="btn_reset_password">Reset Password</string>
+    <string name="splash_welcome">Welcome to Campus Portal</string>
+</resources>

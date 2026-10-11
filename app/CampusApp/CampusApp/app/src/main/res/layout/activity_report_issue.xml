@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background">
+
+    <LinearLayout style="@style/SectionHeader" android:orientation="horizontal" android:gravity="center_vertical">
+        <ImageView android:id="@+id/btnBack" android:layout_width="24dp" android:layout_height="24dp"
+            android:src="@drawable/ic_back" app:tint="@color/white" android:layout_marginEnd="14dp"/>
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Report an Issue" android:textColor="@color/white" android:textSize="20sp" android:textStyle="bold"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp"
+                android:text="Help us maintain campus facilities" android:textColor="#B9C6DA" android:textSize="13sp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="18dp">
+
+            <TextView style="@style/InputLabel" android:layout_marginTop="0dp" android:text="Category"/>
+            <TextView style="@style/InputField" android:gravity="center_vertical" android:text="Classroom Facility (Furniture/AV)"/>
+
+            <TextView style="@style/InputLabel" android:text="Description"/>
+            <EditText
+                android:layout_width="match_parent" android:layout_height="110dp"
+                android:background="@drawable/bg_input" android:gravity="top|start"
+                android:padding="12dp" android:textSize="14sp" android:textColor="@color/text_dark"
+                android:hint="Broken projector in Room A2, won't turn on or recognize HDMI input since morning lecture."
+                android:textColorHint="@color/text_gray_light"/>
+
+            <Button
+                android:id="@+id/btnSubmitReport"
+                android:layout_width="match_parent" android:layout_height="52dp"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/bg_button_red" android:text="Submit report"
+                android:textAllCaps="false" android:textColor="@color/white" android:textStyle="bold" android:elevation="0dp"/>
+
+            <TextView
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="YOUR REPORTS" android:textSize="11sp" android:textStyle="bold" android:textColor="@color/text_gray"/>
+
+            <LinearLayout style="@style/NoticeCard" android:layout_marginTop="10dp" android:orientation="horizontal" android:gravity="center_vertical">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Leaking tap, Hostel B" android:textStyle="bold" android:textSize="14sp" android:textColor="@color/text_dark"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp"
+                        android:text="Submitted: Yesterday • ID: #4402" android:textSize="12sp" android:textColor="@color/text_gray"/>
+                </LinearLayout>
+                <TextView style="@style/NoticeTag" android:text="Pending" android:background="@drawable/bg_pill_orange" android:textColor="@color/badge_orange"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <include layout="@layout/layout_bottom_nav" android:id="@+id/bottomNavInclude"/>
+
+</LinearLayout>
