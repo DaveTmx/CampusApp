@@ -10,16 +10,16 @@ app.use(cors());
 app.use(express.json());
 
 // Import Routes
+const authRoutes = require('./src/routes/authRoutes');
 const groupRoutes = require('./src/routes/groupRoutes');
-const authRoutes = require('./src/routes/authRoutes'); // <-- Check this line
-const studentRoutes = require('./src/routes/studentRoutes');
-const operationsRoutes = require('./src/routes/operationsRoutes');
+// const studentRoutes = require('./src/routes/studentRoutes'); // Commented out until created
+// const operationsRoutes = require('./src/routes/operationsRoutes'); // Commented out until created
 
 // Mount Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/groups', groupRoutes);
-app.use('/api/auth', authRoutes); // <-- Check this line
-app.use('/api/students', studentRoutes);
-app.use('/api/operations', operationsRoutes);
+// app.use('/api/students', studentRoutes); // Commented out until created
+// app.use('/api/operations', operationsRoutes); // Commented out until created
 
 // Health check endpoint
 app.get('/api/health', async (req, res) => {

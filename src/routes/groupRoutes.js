@@ -1,11 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const groupController = require('../controllers/groupController');
+const { 
+  createGroup, 
+  getGroups, 
+  getGroupById, 
+  joinGroup, 
+  leaveGroup 
+} = require('../controllers/groupController');
+const { protect } = require('../middleware/authMiddleware');
 
-// GET /api/groups
-router.get('/', groupController.getAllGroups);
+router.use(protect);
 
-// POST /api/groups
-router.post('/', groupController.createGroup);
+router.post('/', createGroup);
+router.get('/', getGroups);
+router.get('/:id', getGroupById);
+router.post('/:id/join', joinGroup);
+router.post('/:id/leave', leaveGroup);
 
 module.exports = router;
