@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS students (
   student_id      CHAR(36) PRIMARY KEY,
   student_name    VARCHAR(100) NOT NULL,
   student_number  CHAR(9) NOT NULL,
-  programme_code  ENUM('CS','IT','DS') NOT NULL,
+  programme_code  ENUM('CS','IT','DS', "CSec") NOT NULL,
   group_code      CHAR(3) NULL,
   account_id      INT NULL,                 -- references users.id (student's own login)
   version         INT NOT NULL DEFAULT 1,
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS students (
 CREATE TABLE IF NOT EXISTS operations (
   operation_id  CHAR(36) PRIMARY KEY,
   account_id    INT NULL,
-  student_id    CHAR(36) NULL,
+  student_id    CHAR(09) NULL,
   op_type       VARCHAR(20) NOT NULL,
   payload_json  JSON NOT NULL,
   status        ENUM('APPLIED','FAILED') NOT NULL,
