@@ -67,7 +67,7 @@ public class LocalStudentRepository implements StudentRepository {
     // ----- Student: registration -----
 
     @Override
-    public void saveRegistrationDraft(Student draft, String claimCode,
+    public void saveRegistrationDraft(Student draft, String email,
                                       RepoCallback<Student> callback) {
         try {
             JSONObject o = new JSONObject();
@@ -75,7 +75,8 @@ public class LocalStudentRepository implements StudentRepository {
             o.put("number", nullToEmpty(draft.studentNumber));
             o.put("programme", nullToEmpty(draft.programme));
             o.put("group", nullToEmpty(draft.pendingGroup));
-            // The claim code and the password are deliberately not kept.
+            o.put("email", nullToEmpty(email));
+            // The password is deliberately not kept.
             draftPrefs.edit().putString(KEY_DRAFT, o.toString()).apply();
             callback.onResult(Result.of(Result.Status.PENDING, draft));
         } catch (JSONException e) {
@@ -95,6 +96,7 @@ public class LocalStudentRepository implements StudentRepository {
             s.name = o.optString("name");
             s.studentNumber = o.optString("number");
             s.programme = o.optString("programme");
+            s.email = o.optString("email");
             String group = o.optString("group");
             s.pendingGroup = group.isEmpty() ? null : group;
             return s;
@@ -104,10 +106,10 @@ public class LocalStudentRepository implements StudentRepository {
     }
 
     @Override
-    public void register(Student draft, String claimCode, String password,
+    public void register(Student draft, String email, String password,
                          RepoCallback<Student> callback) {
-        if (claimCode == null || claimCode.trim().isEmpty()) {
-            callback.onResult(Result.of(Result.Status.BAD_CREDENTIALS, null));
+        if (email == null || email.trim().isEmpty() || auth.findAccount(email) != null) {
+            callback.onResult(Result.of(Result.Status.DUPLICATE_EMAIL, null));
             return;
         }
         if (findByNumber(draft.studentNumber) != null) {
@@ -117,7 +119,8 @@ public class LocalStudentRepository implements StudentRepository {
 
         com.example.campusapp.data.Student created = appData.addStudent(
                 draft.studentNumber, draft.name, UNASSIGNED_LABEL, Programs.toLabel(draft.programme));
-        if (!auth.createAccount(draft.studentNumber, password, created.id, Session.ROLE_STUDENT)) {
+        if (!auth.createAccount(draft.studentNumber, password, created.id,
+                Session.ROLE_STUDENT, email)) {
             appData.deleteStudent(created.id); // never leave a profile that nobody can sign in to
             callback.onResult(Result.of(Result.Status.DUPLICATE_NUMBER, null));
             return;

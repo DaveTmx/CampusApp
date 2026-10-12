@@ -1,5 +1,6 @@
 package com.example.campusapp.student;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,8 @@ import com.example.campusapp.NavTab;
 import com.example.campusapp.R;
 import com.example.campusapp.data.AppData;
 import com.example.campusapp.data.ClassSession;
+import com.example.campusapp.data.Programs;
+import com.example.campusapp.util.CurrentProgram;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -25,6 +28,8 @@ public class StudentScheduleActivity extends AppCompatActivity {
     private TextView[] dayTabs;
     private LinearLayout classesContainer;
     private int selectedDay;
+    /** CS, IT, DS or CYB: whose timetable is shown. */
+    private String programme;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +56,16 @@ public class StudentScheduleActivity extends AppCompatActivity {
         new BottomNavHelper(this, findViewById(R.id.bottomNavInclude), NavTab.SCHEDULE, destinations);
 
         selectDay(todayIndex());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // The programme can change on the Profile tab, and lecturers can edit the timetable.
+        programme = CurrentProgram.code(this);
+        ((TextView) findViewById(R.id.tvScheduleProgram)).setText(
+                Programs.toLabel(programme) + " timetable");
+        renderClasses();
     }
 
     /** Today's tab on weekdays; Monday on weekends (there are no Sat/Sun classes). */
@@ -81,7 +96,11 @@ public class StudentScheduleActivity extends AppCompatActivity {
         classesContainer.removeAllViews();
         LayoutInflater inflater = LayoutInflater.from(this);
 
-        List<? extends ClassSession> sessions = AppData.getInstance(this).getClassesForDay(selectedDay);
+        if (programme == null) {
+            programme = CurrentProgram.code(this);
+        }
+        List<? extends ClassSession> sessions =
+                AppData.getInstance(this).getClassesForDay(programme, selectedDay);
         if (sessions.isEmpty()) {
             TextView empty = new TextView(this);
             empty.setText("No classes scheduled for this day.");
@@ -118,6 +137,11 @@ public class StudentScheduleActivity extends AppCompatActivity {
                     tvType.setTextColor(ContextCompat.getColor(this, R.color.badge_blue));
                     break;
             }
+
+            // Tap a class to see where it is held on the campus map.
+            card.setOnClickListener(v -> startActivity(
+                    new Intent(this, CampusMapActivity.class)
+                            .putExtra(CampusMapActivity.EXTRA_VENUE, session.room)));
 
             classesContainer.addView(card);
         }

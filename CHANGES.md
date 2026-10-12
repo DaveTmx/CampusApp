@@ -1,5 +1,36 @@
 # CampusApp – fixes applied
 
+## Round 3b: build output outside the project folder
+
+- Root `build.gradle.kts` sends all build output to `%USERPROFILE%\.campusapp-build\CampusApp-<code>\`. With the project inside OneDrive, OneDrive locked files in `app\build` while uploading them and Clean/Rebuild failed with "Unable to delete directory". The APK is now at `%USERPROFILE%\.campusapp-build\CampusApp-<code>\app\outputs\apk\debug\app-debug.apk`; Run in Android Studio finds it automatically.
+
+## Round 3 (12 Oct 2026): one timetable per programme, map from the timetable
+
+Verified: `gradlew assembleDebug testDebugUnitTest lintDebug` pass (29 unit tests), and on the emulator: an IT student sees the IT timetable and IT venues; switching the profile to Data Science switches both; the lecturer can pick any programme.
+
+- **Four timetables** (`data/Timetable.java`) transcribed from the EduRole PDFs: Computer Science (BScCS3), Information Technology (BScIT3), Data Science (BScDS3), Cyber Security (BScCybS3). `Timetable.VERSION` is now 3, so installed apps reload them once (this also replaces any classes a lecturer added earlier).
+- Each stored class has a `program` code. Students see the timetable for the programme on their profile (chosen at registration, changeable on the Profile tab): Schedule tab ("<Programme> timetable"), Home "Next class" card and the map all follow it (`util/CurrentProgram`). Guests see Computer Science.
+- **Lecturer schedule**: a Programme picker; Add class and Import CSV apply to the chosen programme only.
+- **Campus map** (student and lecturer): lists every venue on the timetable with the classes held there (`util/VenueIndex`), a working search box, and "Open in Google Maps" for each venue. Tapping a class on the Schedule opens the map with its venue outlined at the top. Lecturers see all programmes' venues, with shared classes on one line ("CS, IT, CYB · ICS341 …"). Office list kept below.
+- Exact map pins: add coordinates to `COORDINATES` in `student/CampusMapActivity.java`; until then Google Maps searches "<venue>, Mulungushi University, Kabwe".
+- From the PDFs: the Cyber Security PDF cuts off the 15:00-17:00 column and the end of the Monday ICS331 room ("ICT Center Lab (Computer…"); Room 2 was assumed. Data Science's "SSS BLOC" (Wed ICT381) is SSS Block-E Rm 1, as on the other programmes.
+
+## Round 2 (12 Oct 2026)
+
+Verified: `gradlew assembleDebug testDebugUnitTest lintDebug` all pass (22 unit tests, no lint errors), and the flows below were exercised on a Pixel 8 emulator (Android 17).
+
+- **Registration**: the Claim Code field is now **Email Address**. Tapping *Create account* checks the form, then emails a 6-digit code (OtpService/EmailJS). The account is only created after the code is entered in the *Verify your email* dialog (wrong code keeps the dialog open; *Resend code* sends a new one). The email is stored on the account.
+- **Forgot password** now works for newly registered students (before, their account had no email, so reset said "no email on file"). Removed the duplicated "Forgot password" click handlers.
+- **Programs**: Cyber Security (CYB) is in the drop-down, the fake repositories and the MySQL `programme_code` ENUM.
+- **Lecturer login**: label "Staff Email or Username", empty field reads "Enter your email or username".
+- **Role select**: buttons read "Student" / "Lecturer".
+- **Student home**: greeting is "Hi, <name as on the profile>" ("Hi, Guest" for guests); today's date; the *Next class* card reads the stored timetable (`util/NextClass`) and shows e.g. "NEXT CLASS · In 15 mins" / "Tomorrow" / "Wednesday", refreshing every minute; latest notice and study group come from the data. Tapping the cards opens Schedule / Notices / Chat.
+- **Notices bell** opens the Notices screen; its count clears once the student has viewed the notices (`AppData.markAllNoticesRead`). Badge is now solid red so the number is readable.
+- **Edge-to-edge (Android 15+)**: new `CampusApp` Application class pads every screen for the status bar, gesture bar and keyboard. Before, headers sat under the clock and the bottom tabs under the gesture bar.
+- **Buttons**: custom-drawable buttons get `app:backgroundTint="@null"`, so outline/red buttons (Save draft, Cancel, Log out…) are no longer repainted solid blue by the Material theme.
+- **Lint errors fixed**: the "+" buttons on lecturer notices/roster pointed `layout_above` at a view in another container (so they floated at the top); unused `drawable-highdr` screenshot removed; duplicate `ResetPasswordActivity` manifest entry removed.
+- EmailJS is still unconfigured: until the three values in `util/OtpConfig.java` are filled in, the code is shown on screen ("demo mode") instead of emailed.
+
 Verified after the fixes: `gradlew assembleDebug` builds the debug APK, and the 9 plain unit tests pass (`LecturerRosterViewModelTest` 8/8, `ExampleUnitTest` 1/1). The 6 Robolectric tests in `RealStudentRepositoryTest` failed on Robolectric 4.13; see section 5 for the upgrade. Their re-run on 4.16.1 had not finished when this zip was made.
 Every `require()` in the Node backend resolves to a real file, and every backend `.js` file passes `node --check`.
 

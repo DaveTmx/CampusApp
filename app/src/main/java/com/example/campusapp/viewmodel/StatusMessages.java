@@ -17,6 +17,8 @@ final class StatusMessages {
                 return R.string.msg_saved_pending;
             case DUPLICATE_NUMBER:
                 return R.string.msg_duplicate_number;
+            case DUPLICATE_EMAIL:
+                return R.string.error_email_taken;
             case GROUP_FULL:
                 return R.string.msg_group_full;
             case CONFLICT:

@@ -17,6 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
+            android:id="@+id/tvScheduleProgram"
             android:text="Timetable &amp; class sessions"
             android:textColor="#B9C6DA"
             android:textSize="13sp"/>

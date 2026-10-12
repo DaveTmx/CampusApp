@@ -26,6 +26,10 @@ public final class Validation {
     // [0-9] and not \d: on Android \d also accepts digits from other scripts.
     private static final Pattern NUMBER = Pattern.compile("[0-9]{9}");
 
+    // Plain java.util.regex, not android.util.Patterns, so unit tests can use it too.
+    private static final Pattern EMAIL =
+            Pattern.compile("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}");
+
     private Validation() {
     }
 
@@ -46,6 +50,14 @@ public final class Validation {
     public static Integer numberError(String number) {
         if (!NUMBER.matcher(clean(number)).matches()) {
             return R.string.error_number_invalid;
+        }
+        return null;
+    }
+
+    public static Integer emailError(String email) {
+        String e = clean(email);
+        if (e.length() > 254 || !EMAIL.matcher(e).matches()) {
+            return R.string.error_email_invalid;
         }
         return null;
     }

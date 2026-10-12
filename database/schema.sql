@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS students (
   student_id      CHAR(36) PRIMARY KEY,
   student_name    VARCHAR(100) NOT NULL,
   student_number  CHAR(9) NOT NULL,
-  programme_code  ENUM('CS','IT','DS') NOT NULL,
+  programme_code  ENUM('CS','IT','DS','CYB') NOT NULL,
   group_code      CHAR(3) NULL,
   account_id      INT NULL,                 -- references users.id (student's own login)
   version         INT NOT NULL DEFAULT 1,

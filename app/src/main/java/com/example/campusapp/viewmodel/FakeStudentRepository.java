@@ -32,13 +32,13 @@ public class FakeStudentRepository implements StudentRepository {
     public final MutableLiveData<List<GroupCount>> groupCounts = new MutableLiveData<>();
 
     @Override
-    public void saveRegistrationDraft(Student draft, String claimCode,
+    public void saveRegistrationDraft(Student draft, String email,
                                       RepoCallback<Student> callback) {
         callback.onResult(Result.of(Result.Status.PENDING, draft));
     }
 
     @Override
-    public void register(Student draft, String claimCode, String password,
+    public void register(Student draft, String email, String password,
                          RepoCallback<Student> callback) {
         registerCalls++;
         lastRegistered = draft;

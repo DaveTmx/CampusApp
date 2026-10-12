@@ -13,13 +13,15 @@ public final class Result<T> {
         PENDING,
         /** Another student already has this student number. */
         DUPLICATE_NUMBER,
+        /** Another account already uses this email address. */
+        DUPLICATE_EMAIL,
         /** The group already has 15 active students. */
         GROUP_FULL,
         /** Someone else changed the record first; see serverCopy. */
         CONFLICT,
         /** The server rejected a field. */
         INVALID,
-        /** Wrong username, password or claim code. */
+        /** Wrong username or password. */
         BAD_CREDENTIALS,
         /** The student was deleted, on this phone or by someone else. */
         NOT_FOUND,

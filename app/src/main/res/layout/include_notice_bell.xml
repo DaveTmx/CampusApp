@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="18dp"
         android:layout_gravity="top|end"
-        android:background="@drawable/bg_pill_red"
+        android:background="@drawable/bg_badge_count"
         android:gravity="center"
         android:minWidth="18dp"
         android:paddingStart="5dp"
