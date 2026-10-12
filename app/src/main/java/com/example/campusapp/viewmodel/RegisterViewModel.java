@@ -17,7 +17,10 @@ import com.example.campusapp.util.Validation;
  *
  * Typed text is kept in SavedStateHandle so it survives rotation and the
  * system killing the app in the background. The password is the exception:
- * it is never saved on the phone, so it is only passed to submit().
+ * it is never saved on the phone, so it is only passed to checkDetails() and submit().
+ *
+ * Flow: checkDetails() validates the form, the screen then emails a one-time code,
+ * and submit() creates the account once that code has been confirmed.
  */
 public class RegisterViewModel extends ViewModel {
 
@@ -25,7 +28,7 @@ public class RegisterViewModel extends ViewModel {
     private static final String KEY_NUMBER = "number";
     private static final String KEY_PROGRAMME = "programme";
     private static final String KEY_GROUP = "group";
-    private static final String KEY_CLAIM = "claim_code";
+    private static final String KEY_EMAIL = "email";
 
     private final StudentRepository repository;
     private final SavedStateHandle state;
@@ -33,7 +36,7 @@ public class RegisterViewModel extends ViewModel {
     private final MutableLiveData<Integer> nameError = new MutableLiveData<>();
     private final MutableLiveData<Integer> numberError = new MutableLiveData<>();
     private final MutableLiveData<Integer> programmeError = new MutableLiveData<>();
-    private final MutableLiveData<Integer> claimError = new MutableLiveData<>();
+    private final MutableLiveData<Integer> emailError = new MutableLiveData<>();
     private final MutableLiveData<Integer> passwordError = new MutableLiveData<>();
     private final MutableLiveData<Boolean> loading = new MutableLiveData<>(false);
     private final MutableLiveData<Event<Result.Status>> outcome = new MutableLiveData<>();
@@ -63,8 +66,8 @@ public class RegisterViewModel extends ViewModel {
         return state.getLiveData(KEY_GROUP, "");
     }
 
-    public LiveData<String> getClaimCode() {
-        return state.getLiveData(KEY_CLAIM, "");
+    public LiveData<String> getEmail() {
+        return state.getLiveData(KEY_EMAIL, "");
     }
 
     public void setName(String value) {
@@ -83,8 +86,13 @@ public class RegisterViewModel extends ViewModel {
         state.set(KEY_GROUP, value);
     }
 
-    public void setClaimCode(String value) {
-        state.set(KEY_CLAIM, value);
+    public void setEmail(String value) {
+        state.set(KEY_EMAIL, value);
+    }
+
+    /** The trimmed email address typed so far. */
+    public String currentEmail() {
+        return text(KEY_EMAIL);
     }
 
     // ----- What the screen shows -----
@@ -102,8 +110,8 @@ public class RegisterViewModel extends ViewModel {
         return programmeError;
     }
 
-    public LiveData<Integer> getClaimError() {
-        return claimError;
+    public LiveData<Integer> getEmailError() {
+        return emailError;
     }
 
     public LiveData<Integer> getPasswordError() {
@@ -130,12 +138,30 @@ public class RegisterViewModel extends ViewModel {
 
     /** Stores whatever has been typed so far. Nothing is validated yet, so it works half-finished. */
     public void saveDraft() {
-        repository.saveRegistrationDraft(buildStudent(), text(KEY_CLAIM), result ->
+        repository.saveRegistrationDraft(buildStudent(), text(KEY_EMAIL), result ->
                 message.postValue(new Event<>(result.isSaved()
                         ? R.string.msg_draft_saved
                         : StatusMessages.forStatus(result.status))));
     }
 
+    /**
+     * Checks every field and shows the errors. True when the form is ready and the
+     * one-time code can be emailed.
+     */
+    public boolean checkDetails(String password) {
+        return validate(password);
+    }
+
+    /** Shown on a field by the screen, e.g. when the email is already registered. */
+    public void showEmailError(Integer resId) {
+        emailError.setValue(resId);
+    }
+
+    public void showNumberError(Integer resId) {
+        numberError.setValue(resId);
+    }
+
+    /** Creates the account. Call only after the emailed code has been confirmed. */
     public void submit(String password) {
         if (Boolean.TRUE.equals(loading.getValue())) {
             return;
@@ -145,13 +171,13 @@ public class RegisterViewModel extends ViewModel {
         }
 
         loading.setValue(true);
-        repository.register(buildStudent(), text(KEY_CLAIM), password, result -> {
+        repository.register(buildStudent(), text(KEY_EMAIL), password, result -> {
             loading.postValue(false);
             if (result.status == Result.Status.DUPLICATE_NUMBER) {
                 // Shown on the field itself; the form keeps its values.
                 numberError.postValue(R.string.msg_duplicate_number);
-            } else if (result.status == Result.Status.BAD_CREDENTIALS) {
-                claimError.postValue(R.string.error_claim_rejected);
+            } else if (result.status == Result.Status.DUPLICATE_EMAIL) {
+                emailError.postValue(R.string.error_email_taken);
             }
             outcome.postValue(new Event<>(result.status));
             message.postValue(new Event<>(StatusMessages.forStatus(result.status)));
@@ -162,17 +188,17 @@ public class RegisterViewModel extends ViewModel {
         Integer name = Validation.nameError(text(KEY_NAME));
         Integer number = Validation.numberError(text(KEY_NUMBER));
         Integer programme = Validation.programmeError(text(KEY_PROGRAMME));
-        Integer claim = text(KEY_CLAIM).isEmpty() ? R.string.error_claim_required : null;
+        Integer email = Validation.emailError(text(KEY_EMAIL));
         Integer pass = Validation.passwordError(password);
 
         nameError.setValue(name);
         numberError.setValue(number);
         programmeError.setValue(programme);
-        claimError.setValue(claim);
+        emailError.setValue(email);
         passwordError.setValue(pass);
 
         return name == null && number == null && programme == null
-                && claim == null && pass == null;
+                && email == null && pass == null;
     }
 
     private Student buildStudent() {
@@ -180,6 +206,7 @@ public class RegisterViewModel extends ViewModel {
         s.name = text(KEY_NAME);
         s.studentNumber = text(KEY_NUMBER);
         s.programme = text(KEY_PROGRAMME);
+        s.email = text(KEY_EMAIL);
         String group = text(KEY_GROUP);
         // A request only. The place is not reserved until the server confirms it.
         s.pendingGroup = group.isEmpty() ? null : group;

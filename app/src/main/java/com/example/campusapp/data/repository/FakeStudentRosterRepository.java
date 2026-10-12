@@ -32,7 +32,7 @@ public class FakeStudentRosterRepository implements StudentRosterRepository {
         this.executors = executors;
         String[] names = {"Chileshe Banda", "Mwansa Phiri", "Bwalya Tembo", "Chanda Mwila",
                 "Natasha Zulu", "Kondwani Mumba", "Lweendo Siame", "Given Chirwa"};
-        String[] programmes = {"CS", "IT", "DS"};
+        String[] programmes = {"CS", "IT", "DS", "CYB"};
         String[] groups = {"G01", "G02", "G03", "G04", null};
         for (int i = 0; i < 48; i++) {
             Student s = new Student();

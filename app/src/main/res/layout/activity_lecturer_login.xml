@@ -32,8 +32,8 @@
         android:textColor="@color/text_gray"
         android:textSize="14sp"/>
 
-    <TextView style="@style/InputLabel" android:text="Staff Email"/>
-    <EditText android:id="@+id/etEmail" style="@style/InputField" android:hint="Email or username" android:inputType="textEmailAddress"/>
+    <TextView style="@style/InputLabel" android:text="Staff Email or Username"/>
+    <EditText android:id="@+id/etEmail" style="@style/InputField" android:hint="Enter your email or username" android:inputType="textEmailAddress"/>
 
     <TextView style="@style/InputLabel" android:text="Password"/>
     <EditText android:id="@+id/etPassword" style="@style/InputField" android:hint="••••••••" android:inputType="textPassword"/>
@@ -44,6 +44,7 @@
         android:layout_height="52dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/bg_button_red"
+            app:backgroundTint="@null"
         android:text="Log In"
         android:textAllCaps="false"
         android:textColor="@color/white"

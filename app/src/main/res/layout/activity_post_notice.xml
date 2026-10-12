@@ -70,6 +70,7 @@
             android:layout_height="52dp"
             android:layout_marginTop="20dp"
             android:background="@drawable/bg_button_red"
+            app:backgroundTint="@null"
             android:text="Post notice"
             android:textAllCaps="false"
             android:textColor="@color/white"

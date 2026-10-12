@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".CampusApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -91,7 +92,6 @@
             android:exported="false" />
         <activity android:name=".lecturer.LecturerRosterActivity" android:exported="false"/>
         <activity android:name=".lecturer.LecturerSummaryActivity" android:exported="false"/>
-        <activity android:name=".ui.auth.ResetPasswordActivity" android:exported="false"/>
     </application>
 
 </manifest>

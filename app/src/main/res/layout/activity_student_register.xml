@@ -46,7 +46,8 @@
 
         <TextView style="@style/InputLabel" android:text="Email Address"/>
         <EditText android:id="@+id/etEmail" style="@style/InputField"
-            android:hint="e.g. muleba@gmail.com" android:inputType="textEmailAddress"/>
+            android:hint="e.g. chileshe@gmail.com" android:inputType="textEmailAddress"
+            android:autofillHints="emailAddress"/>
 
         <TextView style="@style/InputLabel" android:text="Program"/>
         <include layout="@layout/view_program_spinner"/>
@@ -79,6 +80,7 @@
             android:layout_height="52dp"
             android:layout_marginTop="10dp"
             android:background="@drawable/bg_button_outline"
+            app:backgroundTint="@null"
             android:text="Save draft"
             android:textAllCaps="false"
             android:textColor="@color/text_dark"

@@ -35,7 +35,8 @@
                 android:id="@+id/btnSubmitReport"
                 android:layout_width="match_parent" android:layout_height="52dp"
                 android:layout_marginTop="18dp"
-                android:background="@drawable/bg_button_red" android:text="Submit report"
+                android:background="@drawable/bg_button_red"
+            app:backgroundTint="@null" android:text="Submit report"
                 android:textAllCaps="false" android:textColor="@color/white" android:textStyle="bold" android:elevation="0dp"/>
 
             <TextView

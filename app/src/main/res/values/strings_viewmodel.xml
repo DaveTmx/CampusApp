@@ -5,8 +5,8 @@
     <string name="error_number_invalid">Student number must be exactly 9 digits, with no spaces</string>
     <string name="error_programme_required">Choose a programme</string>
     <string name="error_group_invalid">Choose a lab group from the list</string>
-    <string name="error_claim_required">Enter your claim code</string>
-    <string name="error_claim_rejected">That claim code does not match this student number</string>
+    <string name="error_email_invalid">Enter a valid email address, e.g. name@example.com</string>
+    <string name="error_email_taken">An account with this email address already exists</string>
     <string name="error_password_short">Password must be at least 8 characters</string>
     <string name="error_username_required">Enter your username or student number</string>
     <string name="error_password_required">Enter your password</string>

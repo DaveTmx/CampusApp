@@ -206,6 +206,20 @@ public class AppData {
         save();
     }
 
+    /** Called when a student opens the Notices screen, so the bell's unread count clears. */
+    public void markAllNoticesRead() {
+        boolean changed = false;
+        for (Notice n : notices) {
+            if (n.isNew) {
+                n.isNew = false;
+                changed = true;
+            }
+        }
+        if (changed) {
+            save();
+        }
+    }
+
     // ---------- group chat (students: chat & share updates within their own group) ----------
 
     /** Returns only the messages posted to this group, oldest first. */
@@ -337,14 +351,39 @@ public class AppData {
 
     // ---------- timetable (lecturer: add / remove / import; students: read) ----------
 
-    /** The classes on one day (0 = Mon ... 4 = Fri), earliest first. */
-    public List<TimetableEntry> getClassesForDay(int day) {
+    /**
+     * One programme's classes on one day (0 = Mon ... 4 = Fri), earliest first.
+     * programme is a code from Programs.CODES (CS, IT, DS, CYB).
+     */
+    public List<TimetableEntry> getClassesForDay(String programme, int day) {
         List<TimetableEntry> result = new ArrayList<>();
         for (TimetableEntry e : timetable) {
-            if (e.day == day) result.add(e);
+            if (e.day == day && e.program.equals(programme)) result.add(e);
         }
         java.util.Collections.sort(result, (a, b) -> sortKey(a.time).compareTo(sortKey(b.time)));
         return result;
+    }
+
+    /** Every class of one programme, Monday first, then by time. */
+    public List<TimetableEntry> getClassesForProgram(String programme) {
+        List<TimetableEntry> result = new ArrayList<>();
+        for (int day = 0; day < Timetable.DAYS.length; day++) {
+            result.addAll(getClassesForDay(programme, day));
+        }
+        return result;
+    }
+
+    /**
+     * The programme code whose timetable the signed-in student should see. Guests and
+     * lecturers get Computer Science.
+     */
+    public String programCodeFor(String studentId) {
+        Student s = studentId == null ? null : findStudentById(studentId);
+        String code = s == null ? null : Programs.toCode(s.program);
+        for (String known : Programs.CODES) {
+            if (known.equals(code)) return code;
+        }
+        return Programs.CODES[0];
     }
 
     /** "9:00 - 10:30" -> "09:00 - 10:30", so times sort in clock order. */
@@ -352,8 +391,8 @@ public class AppData {
         return time.indexOf(':') == 1 ? "0" + time : time;
     }
 
-    public TimetableEntry addClass(int day, String name, String time, String room, String type) {
-        TimetableEntry entry = new TimetableEntry(nextClassId++, day, name, time, room, type);
+    public TimetableEntry addClass(String programme, int day, String name, String time, String room, String type) {
+        TimetableEntry entry = new TimetableEntry(nextClassId++, programme, day, name, time, room, type);
         timetable.add(entry);
         saveTimetable();
         return entry;
@@ -366,12 +405,16 @@ public class AppData {
         saveTimetable();
     }
 
-    /** Replaces the whole timetable, for example with the contents of an imported CSV file. */
-    public void replaceTimetable(List<TimetableEntry> entries) {
-        timetable.clear();
-        nextClassId = 1;
+    /**
+     * Replaces one programme's timetable, for example with the contents of an imported CSV file.
+     * The other programmes' timetables are left as they are.
+     */
+    public void replaceTimetable(String programme, List<TimetableEntry> entries) {
+        for (int i = timetable.size() - 1; i >= 0; i--) {
+            if (timetable.get(i).program.equals(programme)) timetable.remove(i);
+        }
         for (TimetableEntry e : entries) {
-            timetable.add(new TimetableEntry(nextClassId++, e.day, e.name, e.time, e.room, e.type));
+            timetable.add(new TimetableEntry(nextClassId++, programme, e.day, e.name, e.time, e.room, e.type));
         }
         saveTimetable();
     }
@@ -379,12 +422,15 @@ public class AppData {
     private void loadTimetable() {
         String stored = prefs.getString(KEY_TIMETABLE, null);
         if (stored == null || prefs.getInt(KEY_TIMETABLE_VERSION, 0) < Timetable.VERSION) {
-            // First run, or the app ships a newer starting timetable: load the official one.
+            // First run, or the app ships newer starting timetables: load the official ones.
             timetable.clear();
             nextClassId = 1;
-            for (int day = 0; day < Timetable.DAYS.length; day++) {
-                for (ClassSession s : Timetable.forDay(day)) {
-                    timetable.add(new TimetableEntry(nextClassId++, day, s.name, s.time, s.room, s.type));
+            for (String programme : Timetable.PROGRAMS) {
+                for (int day = 0; day < Timetable.DAYS.length; day++) {
+                    for (ClassSession s : Timetable.forProgram(programme, day)) {
+                        timetable.add(new TimetableEntry(nextClassId++, programme, day,
+                                s.name, s.time, s.room, s.type));
+                    }
                 }
             }
             saveTimetable();
@@ -395,7 +441,8 @@ public class AppData {
             for (int i = 0; i < array.length(); i++) {
                 JSONObject o = array.getJSONObject(i);
                 long id = o.getLong("id");
-                timetable.add(new TimetableEntry(id, o.getInt("day"), o.getString("name"),
+                timetable.add(new TimetableEntry(id, o.optString("program", Programs.CODES[0]),
+                        o.getInt("day"), o.getString("name"),
                         o.getString("time"), o.getString("room"), o.getString("type")));
                 if (id >= nextClassId) nextClassId = id + 1;
             }
@@ -410,6 +457,7 @@ public class AppData {
             for (TimetableEntry e : timetable) {
                 JSONObject o = new JSONObject();
                 o.put("id", e.id);
+                o.put("program", e.program);
                 o.put("day", e.day);
                 o.put("name", e.name);
                 o.put("time", e.time);
