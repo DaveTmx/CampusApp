@@ -12,12 +12,13 @@ app.use(cors());
 app.use(express.json());
 app.use('/api/operations', operationsRoutes);
 
-const jwt = require('jsonwebtoken');
+const { makeLecturerToken } = require('./helpers/lecturerToken');
 const { JWT_SECRET } = require(path.join(__dirname, '../../src/middleware/auth'));
-const lecturerToken = jwt.sign({ id: 1, email: 'lecturer@test', role: 'lecturer' }, JWT_SECRET);
+let lecturerToken;
+beforeAll(async () => { lecturerToken = await makeLecturerToken(); });
 
 describe('Challenge 2: response loss & operation ID idempotency', () => {
-  const studentId = 'contender-a-0000-0000-0000-000000000001';
+  const studentId = 'a0000000-0000-0000-0000-000000000001';
   const operationId = randomUUID();
 
   beforeAll(async () => {

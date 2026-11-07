@@ -42,7 +42,7 @@ public class RealStudentRepository implements StudentRosterRepository {
     @Override
     public void loadPage(long requestId, String query, int page, int pageSize, Callback callback) {
         final String q = query == null ? "" : query.trim();
-        Call<StudentPageDto> call = api.getStudents(q, page, pageSize);
+        Call<StudentPageDto> call = api.getStudents(q, null, null, null, page, pageSize);
         inFlight.put(requestId, call);
 
         call.enqueue(new retrofit2.Callback<StudentPageDto>() {

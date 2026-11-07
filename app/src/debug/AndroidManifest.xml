@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Debug builds may use plain HTTP to reach the backend on the emulator (10.0.2.2).
+         Release builds keep Android's default, which requires HTTPS. -->
+    <application android:usesCleartextTraffic="true" />
+</manifest>

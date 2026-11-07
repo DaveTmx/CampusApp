@@ -7,7 +7,7 @@
     android:background="@color/background">
 
     <LinearLayout style="@style/SectionHeader" android:orientation="horizontal" android:gravity="center_vertical">
-        <ImageView android:id="@+id/btnBack" android:layout_width="24dp" android:layout_height="24dp"
+        <ImageView android:contentDescription="@string/a11y_back" android:id="@+id/btnBack" android:layout_width="24dp" android:layout_height="24dp"
             android:src="@drawable/ic_back" app:tint="@color/white" android:layout_marginEnd="14dp"/>
         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
@@ -35,7 +35,8 @@
                 android:id="@+id/btnSubmitReport"
                 android:layout_width="match_parent" android:layout_height="52dp"
                 android:layout_marginTop="18dp"
-                android:background="@drawable/bg_button_red" android:text="Submit report"
+                android:background="@drawable/bg_button_red"
+            app:backgroundTint="@null" android:text="Submit report"
                 android:textAllCaps="false" android:textColor="@color/white" android:textStyle="bold" android:elevation="0dp"/>
 
             <TextView

@@ -1,5 +1,6 @@
 // Challenge 3. Run: npx jest backend/tests/conflict.test.js
 const request = require('supertest');
+const { GROUP_CAPACITY } = require('../../src/constants');
 const path = require('path');
 const pool = require(path.join(__dirname, '../../src/db/pool'));
 
@@ -11,10 +12,12 @@ app.use(cors());
 app.use(express.json());
 app.use('/api/students', studentRoutes);
 
-const jwt = require('jsonwebtoken');
+const { makeLecturerToken } = require('./helpers/lecturerToken');
 const { JWT_SECRET } = require(path.join(__dirname, '../../src/middleware/auth'));
-const lecturerToken = jwt.sign({ id: 1, email: 'lecturer@test', role: 'lecturer' }, JWT_SECRET);
-const auth = { Authorization: `Bearer ${lecturerToken}` };
+let auth;
+beforeAll(async () => {
+  auth = { Authorization: `Bearer ${await makeLecturerToken()}` };
+});
 
 describe('Challenge 3: offline stale conflict resolution & soft deletes', () => {
   afterAll(async () => { await pool.end(); });
@@ -39,7 +42,7 @@ describe('Challenge 3: offline stale conflict resolution & soft deletes', () => 
 
   test('scenario B: group fills up while a device is offline', async () => {
     await pool.query('DELETE FROM students');
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < GROUP_CAPACITY; i++) {
       await pool.query(
         `INSERT INTO students (student_id, student_name, student_number, programme_code, group_code, version)
          VALUES (?, ?, ?, 'CS', 'G02', 1)`, [`fill-${i}`, `Fill ${i}`, String(910000000 + i)]

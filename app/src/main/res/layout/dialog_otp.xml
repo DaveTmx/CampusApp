@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Body of the "Verify your email" dialog shown after Create account is tapped. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp"
+    android:paddingTop="8dp">
+
+    <TextView
+        android:id="@+id/tvOtpMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_gray"
+        android:textSize="14sp"/>
+
+    <EditText
+        android:id="@+id/etOtpCode"
+        style="@style/InputField"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:hint="6-digit code"
+        android:importantForAutofill="no"
+        android:inputType="number"
+        android:letterSpacing="0.3"
+        android:maxLength="6"
+        android:textSize="20sp"/>
+
+    <TextView
+        android:id="@+id/tvResendOtp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="12dp"
+        android:padding="8dp"
+        android:text="Didn't get it? Resend code"
+        android:textColor="@color/primary_blue"
+        android:textSize="14sp"/>
+</LinearLayout>

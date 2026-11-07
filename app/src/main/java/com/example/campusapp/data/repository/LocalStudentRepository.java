@@ -15,6 +15,7 @@ import com.example.campusapp.model.Result;
 import com.example.campusapp.model.Session;
 import com.example.campusapp.model.Student;
 import com.example.campusapp.model.StudentPage;
+import com.example.campusapp.util.SessionManager;
 import com.example.campusapp.util.Validation;
 
 import org.json.JSONException;
@@ -43,7 +44,8 @@ public class LocalStudentRepository implements StudentRepository {
     /** What AppData stores for a student who has no group. */
     private static final String UNASSIGNED_LABEL = "Unassigned";
 
-    private static final String DRAFT_PREFS = "campus_drafts";
+    /** Also cleared by LocalAuthRepository on sign-out, so it is package-visible. */
+    static final String DRAFT_PREFS = "campus_drafts";
     private static final String KEY_DRAFT = "registration_draft";
 
     private final AppData appData;
@@ -67,7 +69,7 @@ public class LocalStudentRepository implements StudentRepository {
     // ----- Student: registration -----
 
     @Override
-    public void saveRegistrationDraft(Student draft, String claimCode,
+    public void saveRegistrationDraft(Student draft, String email,
                                       RepoCallback<Student> callback) {
         try {
             JSONObject o = new JSONObject();
@@ -75,7 +77,8 @@ public class LocalStudentRepository implements StudentRepository {
             o.put("number", nullToEmpty(draft.studentNumber));
             o.put("programme", nullToEmpty(draft.programme));
             o.put("group", nullToEmpty(draft.pendingGroup));
-            // The claim code and the password are deliberately not kept.
+            o.put("email", nullToEmpty(email));
+            // The password is deliberately not kept.
             draftPrefs.edit().putString(KEY_DRAFT, o.toString()).apply();
             callback.onResult(Result.of(Result.Status.PENDING, draft));
         } catch (JSONException e) {
@@ -95,6 +98,7 @@ public class LocalStudentRepository implements StudentRepository {
             s.name = o.optString("name");
             s.studentNumber = o.optString("number");
             s.programme = o.optString("programme");
+            s.email = o.optString("email");
             String group = o.optString("group");
             s.pendingGroup = group.isEmpty() ? null : group;
             return s;
@@ -104,10 +108,14 @@ public class LocalStudentRepository implements StudentRepository {
     }
 
     @Override
-    public void register(Student draft, String claimCode, String password,
+    public void register(Student draft, String email, String password,
                          RepoCallback<Student> callback) {
-        if (claimCode == null || claimCode.trim().isEmpty()) {
-            callback.onResult(Result.of(Result.Status.BAD_CREDENTIALS, null));
+        if (email == null || email.trim().isEmpty() || auth.findAccount(email) != null) {
+            callback.onResult(Result.of(Result.Status.DUPLICATE_EMAIL, null));
+            return;
+        }
+        if (Validation.numberError(draft.studentNumber) != null) {
+            callback.onResult(Result.of(Result.Status.INVALID, null));
             return;
         }
         if (findByNumber(draft.studentNumber) != null) {
@@ -115,9 +123,10 @@ public class LocalStudentRepository implements StudentRepository {
             return;
         }
 
-        com.example.campusapp.data.Student created = appData.addStudent(
+        com.example.campusapp.data.StoredStudent created = appData.addStudent(
                 draft.studentNumber, draft.name, UNASSIGNED_LABEL, Programs.toLabel(draft.programme));
-        if (!auth.createAccount(draft.studentNumber, password, created.id, Session.ROLE_STUDENT)) {
+        if (!auth.createAccount(draft.studentNumber, password, created.id,
+                Session.ROLE_STUDENT, email)) {
             appData.deleteStudent(created.id); // never leave a profile that nobody can sign in to
             callback.onResult(Result.of(Result.Status.DUPLICATE_NUMBER, null));
             return;
@@ -158,7 +167,7 @@ public class LocalStudentRepository implements StudentRepository {
 
     @Override
     public void updateOwnDetails(String name, String programme, RepoCallback<Student> callback) {
-        com.example.campusapp.data.Student me = currentStudent();
+        com.example.campusapp.data.StoredStudent me = currentStudent();
         if (me == null) {
             callback.onResult(Result.of(Result.Status.NOT_FOUND, null));
             return;
@@ -171,7 +180,7 @@ public class LocalStudentRepository implements StudentRepository {
 
     @Override
     public void requestGroupChange(String group, RepoCallback<Student> callback) {
-        com.example.campusapp.data.Student me = currentStudent();
+        com.example.campusapp.data.StoredStudent me = currentStudent();
         if (me == null) {
             callback.onResult(Result.of(Result.Status.NOT_FOUND, null));
             return;
@@ -191,12 +200,12 @@ public class LocalStudentRepository implements StudentRepository {
 
     @Override
     public void requestNumberCorrection(String proposedNumber, RepoCallback<Void> callback) {
-        com.example.campusapp.data.Student me = currentStudent();
+        com.example.campusapp.data.StoredStudent me = currentStudent();
         if (me == null) {
             callback.onResult(Result.of(Result.Status.NOT_FOUND, null));
             return;
         }
-        com.example.campusapp.data.Student other = findByNumber(proposedNumber);
+        com.example.campusapp.data.StoredStudent other = findByNumber(proposedNumber);
         if (other != null && !other.id.equals(me.id)) {
             callback.onResult(Result.of(Result.Status.DUPLICATE_NUMBER, null));
             return;
@@ -226,7 +235,7 @@ public class LocalStudentRepository implements StudentRepository {
                        RepoCallback<StudentPage> callback) {
         String needle = query == null ? "" : query.trim().toLowerCase(Locale.ROOT);
         List<Student> matches = new ArrayList<>();
-        for (com.example.campusapp.data.Student s : appData.getStudents()) {
+        for (com.example.campusapp.data.StoredStudent s : appData.getStudents()) {
             Student m = toModel(s);
             if (!needle.isEmpty()
                     && !nullToEmpty(m.name).toLowerCase(Locale.ROOT).contains(needle)
@@ -256,7 +265,7 @@ public class LocalStudentRepository implements StudentRepository {
 
     @Override
     public void getStudent(String studentId, RepoCallback<Student> callback) {
-        com.example.campusapp.data.Student s = appData.findStudentById(studentId);
+        com.example.campusapp.data.StoredStudent s = appData.findStudentById(studentId);
         if (s == null) {
             callback.onResult(Result.of(Result.Status.NOT_FOUND, null));
         } else {
@@ -266,11 +275,15 @@ public class LocalStudentRepository implements StudentRepository {
 
     @Override
     public void createStudent(Student student, RepoCallback<Student> callback) {
+        if (Validation.numberError(student.studentNumber) != null) {
+            callback.onResult(Result.of(Result.Status.INVALID, null));
+            return;
+        }
         if (findByNumber(student.studentNumber) != null) {
             callback.onResult(Result.of(Result.Status.DUPLICATE_NUMBER, null));
             return;
         }
-        com.example.campusapp.data.Student created = appData.addStudent(
+        com.example.campusapp.data.StoredStudent created = appData.addStudent(
                 student.studentNumber, student.name, UNASSIGNED_LABEL,
                 Programs.toLabel(student.programme));
         versions.put(created.id, 1);
@@ -280,7 +293,11 @@ public class LocalStudentRepository implements StudentRepository {
 
     @Override
     public void updateStudent(Student student, RepoCallback<Student> callback) {
-        com.example.campusapp.data.Student current = appData.findStudentById(student.studentId);
+        if (Validation.numberError(student.studentNumber) != null) {
+            callback.onResult(Result.of(Result.Status.INVALID, null));
+            return;
+        }
+        com.example.campusapp.data.StoredStudent current = appData.findStudentById(student.studentId);
         if (current == null) {
             callback.onResult(Result.of(Result.Status.NOT_FOUND, null));
             return;
@@ -289,7 +306,7 @@ public class LocalStudentRepository implements StudentRepository {
             callback.onResult(Result.conflict(student, toModel(current)));
             return;
         }
-        com.example.campusapp.data.Student other = findByNumber(student.studentNumber);
+        com.example.campusapp.data.StoredStudent other = findByNumber(student.studentNumber);
         if (other != null && !other.id.equals(current.id)) {
             callback.onResult(Result.of(Result.Status.DUPLICATE_NUMBER, null));
             return;
@@ -303,7 +320,7 @@ public class LocalStudentRepository implements StudentRepository {
 
     @Override
     public void assignGroup(String studentId, String group, RepoCallback<Student> callback) {
-        com.example.campusapp.data.Student s = appData.findStudentById(studentId);
+        com.example.campusapp.data.StoredStudent s = appData.findStudentById(studentId);
         if (s == null) {
             callback.onResult(Result.of(Result.Status.NOT_FOUND, null));
             return;
@@ -338,7 +355,7 @@ public class LocalStudentRepository implements StudentRepository {
      * data behind this class's back (the approval queue) are refreshed by calling syncNow().
      */
     private void refresh() {
-        com.example.campusapp.data.Student me = currentStudent();
+        com.example.campusapp.data.StoredStudent me = currentStudent();
         Student profile = me == null ? null : toModel(me);
         if (Looper.myLooper() == Looper.getMainLooper()) {
             ownProfile.setValue(profile); // immediate, so a screen never shows the previous student
@@ -349,7 +366,7 @@ public class LocalStudentRepository implements StudentRepository {
         List<GroupCount> counts = new ArrayList<>();
         for (String group : Validation.GROUPS) {
             int n = 0;
-            for (com.example.campusapp.data.Student s : appData.getStudents()) {
+            for (com.example.campusapp.data.StoredStudent s : appData.getStudents()) {
                 if (group.equals(s.group)) {
                     n++;
                 }
@@ -360,21 +377,21 @@ public class LocalStudentRepository implements StudentRepository {
     }
 
     /** The signed-in student, or the demo student when the app is used as a guest. */
-    private com.example.campusapp.data.Student currentStudent() {
-        Session session = auth.currentSession();
+    private com.example.campusapp.data.StoredStudent currentStudent() {
+        Session session = SessionManager.getCurrent(); // set by the backend sign-in and at startup
         String id = (session != null && !session.isLecturer())
                 ? session.accountId : AppData.CURRENT_STUDENT_ID;
         return appData.findStudentById(id);
     }
 
-    private com.example.campusapp.data.Student findByNumber(String number) {
+    private com.example.campusapp.data.StoredStudent findByNumber(String number) {
         return number == null ? null : appData.findStudentByNumber(number.trim());
     }
 
     /** True when the group already has its 15 students, not counting the student asking. */
     private boolean isFull(String group, String exceptStudentId) {
         int n = 0;
-        for (com.example.campusapp.data.Student s : appData.getStudents()) {
+        for (com.example.campusapp.data.StoredStudent s : appData.getStudents()) {
             if (group.equals(s.group) && !s.id.equals(exceptStudentId)) {
                 n++;
             }
@@ -382,7 +399,7 @@ public class LocalStudentRepository implements StudentRepository {
         return n >= GroupCount.CAPACITY;
     }
 
-    private Student toModel(com.example.campusapp.data.Student s) {
+    private Student toModel(com.example.campusapp.data.StoredStudent s) {
         Student m = new Student();
         m.studentId = s.id;
         m.name = s.name;

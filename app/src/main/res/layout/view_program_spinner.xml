@@ -13,12 +13,11 @@
         android:paddingEnd="36dp"
         android:spinnerMode="dropdown"/>
 
-    <ImageView
+    <ImageView android:importantForAccessibility="no"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_gravity="end|center_vertical"
         android:layout_marginEnd="12dp"
-        android:src="@drawable/ic_arrow_down"
-        android:importantForAccessibility="no"/>
+        android:src="@drawable/ic_arrow_down"/>
 
 </FrameLayout>

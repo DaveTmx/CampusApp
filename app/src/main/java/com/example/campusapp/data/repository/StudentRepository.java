@@ -21,14 +21,14 @@ public interface StudentRepository {
     // ----- Student: registration -----
 
     /** Saves what has been typed so far in Room. Works offline. */
-    void saveRegistrationDraft(Student draft, String claimCode, RepoCallback<Student> callback);
+    void saveRegistrationDraft(Student draft, String email, RepoCallback<Student> callback);
 
     /**
      * Creates the profile and account (or links to a profile the lecturer already
      * entered), then asks for draft.pendingGroup if one was chosen.
      * GROUP_FULL means the profile exists but is unassigned.
      */
-    void register(Student draft, String claimCode, String password, RepoCallback<Student> callback);
+    void register(Student draft, String email, String password, RepoCallback<Student> callback);
 
     // ----- Student: own profile -----
 
@@ -73,4 +73,12 @@ public interface StudentRepository {
     void assignGroup(String studentId, String group, RepoCallback<Student> callback);
 
     void deleteStudent(String studentId, RepoCallback<Void> callback);
+
+    /**
+     * Drops a queued change the server refused, then calls done on the main thread. Only the
+     * server-backed repository has a queue, so the default just reports done.
+     */
+    default void dismissRefused(String studentId, Runnable done) {
+        done.run();
+    }
 }

@@ -17,6 +17,8 @@ final class StatusMessages {
                 return R.string.msg_saved_pending;
             case DUPLICATE_NUMBER:
                 return R.string.msg_duplicate_number;
+            case DUPLICATE_EMAIL:
+                return R.string.error_email_taken;
             case GROUP_FULL:
                 return R.string.msg_group_full;
             case CONFLICT:
@@ -33,6 +35,24 @@ final class StatusMessages {
                 return R.string.msg_session_expired;
             case OFFLINE:
                 return R.string.msg_offline;
+            case LOCKED_OUT:
+                return R.string.msg_locked_out;
+            case NOT_VERIFIED:
+                return R.string.msg_not_verified;
+            case USE_STAFF_SIGN_IN:
+                return R.string.msg_use_staff_sign_in;
+            case WRONG_CODE:
+                return R.string.msg_wrong_code;
+            case CODE_EXPIRED:
+                return R.string.msg_code_expired;
+            case CODE_TOO_SOON:
+                return R.string.msg_code_too_soon;
+            case CODE_NOT_SENT:
+                return R.string.msg_code_not_sent;
+            case RATE_LIMITED:
+                return R.string.msg_rate_limited;
+            case CHECK_EMAIL:
+                return R.string.msg_check_email;
             default:
                 return R.string.msg_generic_error;
         }

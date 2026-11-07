@@ -13,13 +13,15 @@ public final class Result<T> {
         PENDING,
         /** Another student already has this student number. */
         DUPLICATE_NUMBER,
+        /** Another account already uses this email address. */
+        DUPLICATE_EMAIL,
         /** The group already has 15 active students. */
         GROUP_FULL,
         /** Someone else changed the record first; see serverCopy. */
         CONFLICT,
         /** The server rejected a field. */
         INVALID,
-        /** Wrong username, password or claim code. */
+        /** Wrong username or password. */
         BAD_CREDENTIALS,
         /** The student was deleted, on this phone or by someone else. */
         NOT_FOUND,
@@ -28,6 +30,26 @@ public final class Result<T> {
         SESSION_EXPIRED,
         /** No connection, and this action cannot be queued. */
         OFFLINE,
+        /** Too many wrong passwords. The account is locked for a while. */
+        LOCKED_OUT,
+        /** Password was right for a staff account; the emailed code is still needed. */
+        NEEDS_CODE,
+        /** The email address has not been verified yet. */
+        NOT_VERIFIED,
+        /** A lecturer signed in on the student screen. Use the staff sign-in. */
+        USE_STAFF_SIGN_IN,
+        /** The emailed code was wrong. The user may try again. */
+        WRONG_CODE,
+        /** The emailed code has expired or was used up. Start the sign-in again. */
+        CODE_EXPIRED,
+        /** A code was sent a moment ago. Wait before asking for another. */
+        CODE_TOO_SOON,
+        /** The email service could not send the code. */
+        CODE_NOT_SENT,
+        /** Too many requests from this phone. Wait and try again. */
+        RATE_LIMITED,
+        /** The account was created on the server. The student must open the link in their email first. */
+        CHECK_EMAIL,
         ERROR
     }
 

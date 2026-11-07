@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="msg_not_verified">Verify your email first. Open the link we sent you</string>
+    <string name="msg_use_staff_sign_in">Lecturers sign in with the code sent to their email</string>
+    <string name="msg_wrong_code">That code is not correct</string>
+    <string name="msg_code_expired">That code can no longer be used. Sign in again to get a new one</string>
+    <string name="msg_code_too_soon">A code was sent a moment ago. Wait a minute before asking for another</string>
+    <string name="msg_code_not_sent">The code could not be emailed. Try again shortly</string>
+    <string name="msg_rate_limited">Too many attempts. Wait a few minutes and try again</string>
+    <string name="msg_check_email">Account created. Open the link we emailed you, then sign in</string>
+    <string name="msg_reset_sent">If an account exists for that email, we have sent a reset link. Open it to choose a new password</string>
+    <string name="hint_username">Email address or student number</string>
+    <string name="msg_username_invalid">Enter your email address or your 9-digit student number</string>
+    <string name="staff_code_message">We sent a 6-digit code to %s. Enter it to finish signing in. It expires in 10 minutes.</string>
+    <string name="msg_reset_connection">Could not reach the server. Check your connection and try again</string>
+</resources>

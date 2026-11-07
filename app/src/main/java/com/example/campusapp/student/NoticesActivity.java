@@ -62,6 +62,14 @@ public class NoticesActivity extends AppCompatActivity {
         renderNotices(); // picks up anything the lecturer just posted
     }
 
+    @Override
+    protected void onPause() {
+        // The NEW badges stay visible while the screen is open; once the student leaves,
+        // the notices count as read and the bell on the home screen clears.
+        appData.markAllNoticesRead();
+        super.onPause();
+    }
+
     private void selectFilter(String filter) {
         selectedFilter = filter;
         highlightChips();

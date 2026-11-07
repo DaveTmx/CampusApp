@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:padding="24dp">
 
-    <ImageView
+    <ImageView android:contentDescription="@string/a11y_back"
         android:id="@+id/btnBack"
         android:layout_width="28dp"
         android:layout_height="28dp"
@@ -32,8 +32,8 @@
         android:textColor="@color/text_gray"
         android:textSize="14sp"/>
 
-    <TextView style="@style/InputLabel" android:text="Student Number"/>
-    <EditText android:id="@+id/etStudentNumber" style="@style/InputField" android:hint="e.g. 202419080" android:inputType="number"/>
+    <TextView style="@style/InputLabel" android:text="Username"/>
+    <EditText android:id="@+id/etStudentNumber" style="@style/InputField" android:hint="@string/hint_username" android:inputType="textEmailAddress"/>
 
     <TextView style="@style/InputLabel" android:text="Password"/>
     <EditText android:id="@+id/etPassword" style="@style/InputField" android:hint="••••••••" android:inputType="textPassword"/>
@@ -44,6 +44,7 @@
         android:layout_height="52dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/bg_button_blue"
+            app:backgroundTint="@null"
         android:text="Log In"
         android:textAllCaps="false"
         android:textColor="@color/white"

@@ -63,7 +63,7 @@ public class RosterViewModel extends ViewModel {
         return state.getLiveData(KEY_QUERY, "");
     }
 
-    /** CS, IT, DS, or null for any programme. */
+    /** CS, IT, DS, CYB, or null for any programme. */
     public LiveData<String> getProgrammeFilter() {
         return state.getLiveData(KEY_PROGRAMME);
     }
@@ -161,6 +161,11 @@ public class RosterViewModel extends ViewModel {
             students.postValue(snapshot);
             message.postValue(new Event<>(R.string.msg_deleted));
         });
+    }
+
+    /** The lecturer chose to drop a change the server refused. Reloads afterwards. */
+    public void dismissRefused(String studentId) {
+        repository.dismissRefused(studentId, this::refresh);
     }
 
     public void syncNow() {

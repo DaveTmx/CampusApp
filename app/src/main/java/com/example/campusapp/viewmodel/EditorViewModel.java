@@ -32,6 +32,11 @@ public class EditorViewModel extends ViewModel {
     private static final String KEY_GROUP = "group";
     private static final String KEY_BASE_VERSION = "base_version";
     private static final String KEY_LOADED = "loaded";
+    // The values as last loaded from the server, to tell a group-only change from a details change.
+    private static final String KEY_LOADED_NAME = "loaded_name";
+    private static final String KEY_LOADED_NUMBER = "loaded_number";
+    private static final String KEY_LOADED_PROGRAMME = "loaded_programme";
+    private static final String KEY_LOADED_GROUP = "loaded_group";
 
     private final StudentRepository repository;
     private final SavedStateHandle state;
@@ -152,9 +157,26 @@ public class EditorViewModel extends ViewModel {
         RepoCallback<Student> afterProfile = result -> onProfileSaved(result, wantedGroup);
         if (proposal.studentId == null) {
             repository.createStudent(proposal, afterProfile);
+        } else if (detailsUnchanged(proposal)) {
+            // Only the group changed. Skip the details save so the group change
+            // can be queued while offline. assignGroup queues itself when there is no connection.
+            Student current = new Student();
+            current.studentId = proposal.studentId;
+            current.version = proposal.version;
+            String group = state.get(KEY_LOADED_GROUP);
+            current.confirmedGroup = group == null || group.isEmpty() ? null : group;
+            afterProfile.onResult(Result.of(Result.Status.SUCCESS, current));
         } else {
             repository.updateStudent(proposal, afterProfile);
         }
+    }
+
+    /** True when name, number and programme match the values last loaded from the server. */
+    private boolean detailsUnchanged(Student proposal) {
+        return Objects.equals(proposal.name, state.get(KEY_LOADED_NAME))
+                && Objects.equals(proposal.studentNumber, state.get(KEY_LOADED_NUMBER))
+                && Objects.equals(proposal.programme, state.get(KEY_LOADED_PROGRAMME))
+                && state.get(KEY_LOADED_NAME) != null;
     }
 
     /** Conflict choice 1: drop my edits and show what the server has. */
@@ -292,6 +314,10 @@ public class EditorViewModel extends ViewModel {
         post(KEY_GROUP, s.confirmedGroup == null ? "" : s.confirmedGroup);
         post(KEY_BASE_VERSION, s.version);
         post(KEY_LOADED, true);
+        post(KEY_LOADED_NAME, s.name);
+        post(KEY_LOADED_NUMBER, s.studentNumber);
+        post(KEY_LOADED_PROGRAMME, s.programme);
+        post(KEY_LOADED_GROUP, s.confirmedGroup == null ? "" : s.confirmedGroup);
     }
 
     /**

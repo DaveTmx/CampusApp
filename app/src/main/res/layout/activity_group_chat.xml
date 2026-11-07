@@ -7,7 +7,7 @@
     android:background="@color/background">
 
     <LinearLayout style="@style/SectionHeader" android:orientation="horizontal" android:gravity="center_vertical" android:paddingBottom="18dp">
-        <ImageView
+        <ImageView android:contentDescription="@string/a11y_back"
             android:id="@+id/btnBack"
             android:layout_width="24dp"
             android:layout_height="24dp"
@@ -77,7 +77,7 @@
             android:inputType="textCapSentences|textMultiLine"
             android:maxLines="4"/>
 
-        <ImageView
+        <ImageView android:contentDescription="@string/a11y_send"
             android:id="@+id/btnSend"
             android:layout_width="46dp"
             android:layout_height="46dp"

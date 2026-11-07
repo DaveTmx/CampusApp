@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,6 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 @RunWith(RobolectricTestRunner.class)
+@Config(sdk = 34)
 public class RealStudentRepositoryTest {
 
     private static final String ONE_STUDENT_JSON =
@@ -75,11 +77,12 @@ public class RealStudentRepositoryTest {
             out.set(result);
             done.countDown();
         });
-        long deadline = System.currentTimeMillis() + 5000;
-        while (done.getCount() > 0 && System.currentTimeMillis() < deadline) {
+        done.await(5, TimeUnit.SECONDS);
+        for (int i = 0; i < 50; i++) {
             shadowOf(Looper.getMainLooper()).idle();
             Thread.sleep(10);
         }
+        shadowOf(Looper.getMainLooper()).idle();
         return out.get();
     }
 

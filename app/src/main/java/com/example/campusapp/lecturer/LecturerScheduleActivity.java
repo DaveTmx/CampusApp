@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -21,6 +22,7 @@ import com.example.campusapp.BottomNavHelper;
 import com.example.campusapp.NavTab;
 import com.example.campusapp.R;
 import com.example.campusapp.data.AppData;
+import com.example.campusapp.data.Programs;
 import com.example.campusapp.data.Timetable;
 import com.example.campusapp.data.TimetableEntry;
 import com.example.campusapp.util.TimetableCsv;
@@ -44,6 +46,8 @@ public class LecturerScheduleActivity extends AppCompatActivity {
 
     private AppData appData;
     private LinearLayout container;
+    /** The programme whose timetable is shown and edited (CS, IT, DS or CYB). */
+    private String programme = Programs.CODES[0];
 
     private final ActivityResultLauncher<String[]> filePicker =
             registerForActivityResult(new ActivityResultContracts.OpenDocument(), this::onFilePicked);
@@ -66,6 +70,24 @@ public class LecturerScheduleActivity extends AppCompatActivity {
         findViewById(R.id.btnAddClass).setOnClickListener(v -> showAddDialog());
         findViewById(R.id.btnImportCsv).setOnClickListener(v -> showImportHelp());
 
+        // Each programme has its own timetable; students see the one for their programme.
+        Spinner spProgram = findViewById(R.id.spScheduleProgram);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, Programs.ALL);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spProgram.setAdapter(adapter);
+        spProgram.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                programme = Programs.CODES[position];
+                render();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
         render();
     }
 
@@ -77,7 +99,7 @@ public class LecturerScheduleActivity extends AppCompatActivity {
         int total = 0;
 
         for (int day = 0; day < Timetable.DAYS.length; day++) {
-            List<TimetableEntry> classes = appData.getClassesForDay(day);
+            List<TimetableEntry> classes = appData.getClassesForDay(programme, day);
             total += classes.size();
             if (classes.isEmpty()) continue;
 
@@ -102,7 +124,8 @@ public class LecturerScheduleActivity extends AppCompatActivity {
 
         if (total == 0) {
             TextView empty = new TextView(this);
-            empty.setText("No classes yet. Add one, or import a CSV file.");
+            empty.setText("No " + Programs.toLabel(programme)
+                    + " classes yet. Add one, or import a CSV file.");
             empty.setGravity(android.view.Gravity.CENTER);
             empty.setTextColor(ContextCompat.getColor(this, R.color.text_gray));
             int pad = (int) (32 * getResources().getDisplayMetrics().density);
@@ -154,7 +177,7 @@ public class LecturerScheduleActivity extends AppCompatActivity {
         form.addView(spType);
 
         AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle("Add class")
+                .setTitle("Add " + Programs.toLabel(programme) + " class")
                 .setView(form)
                 .setNegativeButton("Cancel", null)
                 .setPositiveButton("Save", null) // set below so a mistake keeps the dialog open
@@ -172,7 +195,7 @@ public class LecturerScheduleActivity extends AppCompatActivity {
             } else if (room.isEmpty()) {
                 etRoom.setError("Enter the room");
             } else {
-                appData.addClass(spDay.getSelectedItemPosition(), name,
+                appData.addClass(programme, spDay.getSelectedItemPosition(), name,
                         time.replaceAll("\\s*-\\s*", " - "), room, TimetableCsv.TYPES[spType.getSelectedItemPosition()]);
                 dialog.dismiss();
                 render();
@@ -198,7 +221,8 @@ public class LecturerScheduleActivity extends AppCompatActivity {
                         + "Tue,Mobile Dev Lab,11:00 - 12:30,Lab 3,Practical\n\n"
                         + "Day is Mon to Fri. Type is Lecture, Practical or Tutorial. "
                         + "You can save a spreadsheet as CSV from Excel or Google Sheets.\n\n"
-                        + "Importing replaces the current timetable.")
+                        + "Importing replaces the " + Programs.toLabel(programme)
+                        + " timetable only. Choose the programme above first.")
                 .setNegativeButton("Cancel", null)
                 .setPositiveButton("Choose file", (d, which) -> filePicker.launch(new String[]{"*/*"}))
                 .show();
@@ -216,11 +240,12 @@ public class LecturerScheduleActivity extends AppCompatActivity {
         try {
             List<TimetableEntry> entries = TimetableCsv.parse(text);
             new AlertDialog.Builder(this)
-                    .setTitle("Replace timetable?")
-                    .setMessage(entries.size() + " classes found. This replaces the current timetable.")
+                    .setTitle("Replace " + Programs.toLabel(programme) + " timetable?")
+                    .setMessage(entries.size() + " classes found. This replaces the "
+                            + Programs.toLabel(programme) + " timetable. Other programmes are not changed.")
                     .setNegativeButton("Cancel", null)
                     .setPositiveButton("Replace", (d, which) -> {
-                        appData.replaceTimetable(entries);
+                        appData.replaceTimetable(programme, entries);
                         render();
                         Toast.makeText(this, "Timetable imported", Toast.LENGTH_SHORT).show();
                     })

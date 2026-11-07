@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="a11y_back">Back</string>
+    <string name="a11y_send">Send message</string>
+    <string name="a11y_add_student">Add student</string>
+    <string name="a11y_notices">Notices</string>
+</resources>

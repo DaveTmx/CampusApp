@@ -46,7 +46,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="Monday, 20 April"
+                        android:id="@+id/tvDate"
+                        android:text=""
                         android:textColor="#B9C6DA"
                         android:textSize="13sp"/>
                 </LinearLayout>
@@ -77,7 +78,11 @@
                     android:background="@drawable/bg_card"
                     android:padding="16dp"
                     android:layout_marginTop="0dp"
-                    android:elevation="4dp">
+                    android:elevation="4dp"
+                    android:id="@+id/cardNextClass"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -87,7 +92,8 @@
                         android:paddingRight="10dp"
                         android:paddingTop="4dp"
                         android:paddingBottom="4dp"
-                        android:text="NEXT CLASS · In 15 mins"
+                        android:id="@+id/tvNextBadge"
+                        android:text="NEXT CLASS"
                         android:textColor="@color/badge_red"
                         android:textSize="11sp"
                         android:textStyle="bold"/>
@@ -96,7 +102,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:text="Database Systems"
+                        android:id="@+id/tvNextName"
+                        android:text="No upcoming classes"
                         android:textColor="@color/text_dark"
                         android:textSize="18sp"
                         android:textStyle="bold"/>
@@ -105,7 +112,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="09:00 - 10:30 • Room 102"
+                        android:id="@+id/tvNextDetails"
+                        android:text=""
                         android:textColor="@color/text_gray"
                         android:textSize="13sp"/>
                 </LinearLayout>
@@ -114,7 +122,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:text="LATEST NOTICE · 1h ago"
+                    android:id="@+id/tvLatestLabel"
+                    android:text="LATEST NOTICE"
                     android:textColor="@color/text_gray"
                     android:textSize="11sp"
                     android:textStyle="bold"/>
@@ -126,12 +135,17 @@
                     android:background="@drawable/bg_card"
                     android:padding="16dp"
                     android:layout_marginTop="8dp"
-                    android:elevation="2dp">
+                    android:elevation="2dp"
+                    android:id="@+id/cardLatestNotice"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Library Closed Saturday"
+                        android:id="@+id/tvLatestTitle"
+                        android:text="No notices yet"
                         android:textColor="@color/text_dark"
                         android:textSize="15sp"
                         android:textStyle="bold"/>
@@ -140,7 +154,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="The main library will be closed for quarterly maintenance."
+                        android:id="@+id/tvLatestBody"
+                        android:text=""
                         android:textColor="@color/text_gray"
                         android:textSize="13sp"/>
                 </LinearLayout>
@@ -170,7 +185,8 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Group 3 - Systems Dev"
+                        android:id="@+id/tvGroupName"
+                        android:text="No group yet"
                         android:textColor="@color/text_dark"
                         android:textSize="15sp"
                         android:textStyle="bold"/>
@@ -179,7 +195,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="4 active members • Next meet: Wed"
+                        android:id="@+id/tvGroupDetails"
+                        android:text="Tap to open your group chat"
                         android:textColor="@color/text_gray"
                         android:textSize="13sp"/>
                 </LinearLayout>

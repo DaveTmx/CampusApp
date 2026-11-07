@@ -15,6 +15,7 @@ import com.example.campusapp.NavTab;
 import com.example.campusapp.R;
 import com.example.campusapp.RoleSelectActivity;
 import com.example.campusapp.util.ServiceLocator;
+import com.example.campusapp.data.remote.TokenStore;
 import com.example.campusapp.viewmodel.AuthViewModel;
 
 import java.util.HashMap;
@@ -25,6 +26,15 @@ public class LecturerAccountActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lecturer_account);
+
+        TokenStore tokens = new TokenStore(this);
+        String name = tokens.fullName();
+        String email = tokens.email();
+        ((android.widget.TextView) findViewById(R.id.tvAccountName))
+                .setText(name == null || name.isEmpty() ? "Lecturer" : name);
+        ((android.widget.TextView) findViewById(R.id.tvAccountEmail))
+                .setText(email == null ? "" : email);
+        ((android.widget.TextView) findViewById(R.id.tvAccountRole)).setText("Lecturer");
 
         AuthViewModel authViewModel = new ViewModelProvider(this, ServiceLocator.viewModelFactory(this))
                 .get(AuthViewModel.class);

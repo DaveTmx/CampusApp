@@ -17,8 +17,10 @@ public class Student {
     public String name;
     /** A String, never an int, so leading zeroes such as 012345678 are kept. */
     public String studentNumber;
-    /** CS, IT or DS. */
+    /** CS, IT, DS or CYB. */
     public String programme;
+    /** Where one-time codes are sent. Only set while registering. */
+    public String email;
     /** Group confirmed by the server: G01..G04, or null for Unassigned. */
     public String confirmedGroup;
     /** Group that was requested but is not confirmed yet, or null. It does not reserve a place. */

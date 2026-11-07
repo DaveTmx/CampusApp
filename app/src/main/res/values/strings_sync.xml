@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sync_pending">Pending sync: will send when online</string>
+    <string name="sync_action_required">Needs attention: the server refused this change</string>
+    <string name="sync_review_title">Change refused</string>
+    <string name="sync_review_message">The server did not accept this change, for example because the group is full. Discard it to reload the roster with the server\'s version.</string>
+    <string name="sync_discard">Discard</string>
+    <string name="sync_keep">Keep</string>
+</resources>

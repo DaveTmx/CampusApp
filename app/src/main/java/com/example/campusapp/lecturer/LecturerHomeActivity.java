@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.campusapp.BottomNavHelper;
 import com.example.campusapp.NavTab;
 import com.example.campusapp.R;
+import com.example.campusapp.data.remote.TokenStore;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,8 +21,10 @@ public class LecturerHomeActivity extends AppCompatActivity {
 
         ((TextView) findViewById(R.id.tvTitle)).setText("Welcome back");
         ((TextView) findViewById(R.id.tvSubtitle)).setText("Mulungushi University Portal");
-        ((TextView) findViewById(R.id.tvBody)).setText(
-                "Mr. E. Nyirenda\nDepartment of Computer Science\n\nUse the Profile tab to manage your rosters, groups, and sync status.");
+        String name = new TokenStore(this).fullName();
+        String greeting = (name == null || name.isEmpty() ? "" : name + "\n\n")
+                + "Use the Profile tab to manage your rosters, groups, and sync status.";
+        ((TextView) findViewById(R.id.tvBody)).setText(greeting);
 
         Map<NavTab, Class<?>> destinations = new HashMap<>();
         destinations.put(NavTab.SCHEDULE, LecturerScheduleActivity.class);

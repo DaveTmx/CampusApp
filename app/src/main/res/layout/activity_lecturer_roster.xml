@@ -88,6 +88,45 @@
             </com.google.android.material.chip.ChipGroup>
         </HorizontalScrollView>
 
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:scrollbars="none">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupProgrammes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:selectionRequired="true"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipProgAll" style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:minHeight="48dp" android:checkable="true" android:checked="true"
+                    android:text="@string/roster_chip_all"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipProgCS" style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:minHeight="48dp" android:checkable="true" android:text="CS"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipProgIT" style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:minHeight="48dp" android:checkable="true" android:text="IT"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipProgDS" style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:minHeight="48dp" android:checkable="true" android:text="DS"/>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipProgCYB" style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:minHeight="48dp" android:checkable="true" android:text="CYB"/>
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
+
         <TextView
             android:id="@+id/tvCachedBanner"
             android:layout_width="match_parent"

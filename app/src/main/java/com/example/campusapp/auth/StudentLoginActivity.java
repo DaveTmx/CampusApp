@@ -27,16 +27,22 @@ public class StudentLoginActivity extends AppCompatActivity {
         EditText etNumber = findViewById(R.id.etStudentNumber);
         EditText etPassword = findViewById(R.id.etPassword);
         Button btnLogIn = findViewById(R.id.btnLogIn);
-
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
         findViewById(R.id.tvForgot).setOnClickListener(v ->
                 startActivity(new Intent(this, ResetPasswordActivity.class)));
 
-        findViewById(R.id.tvForgot).setOnClickListener(v ->
-                startActivity(new Intent(this, ResetPasswordActivity.class)));
-
-        btnLogIn.setOnClickListener(v -> viewModel.signIn(
-                etNumber.getText().toString(), etPassword.getText().toString()));
+        btnLogIn.setOnClickListener(v -> {
+            String typed = etNumber.getText().toString().trim();
+            // An email always has "@". Anything else must be a 9-digit student number.
+            // An empty field is left to the ViewModel, which reports it as required.
+            boolean isEmail = typed.contains("@");
+            boolean isStudentNumber = typed.matches("\\d{9}");
+            if (!typed.isEmpty() && !isEmail && !isStudentNumber) {
+                etNumber.setError(getString(R.string.msg_username_invalid));
+                return;
+            }
+            viewModel.signIn(typed, etPassword.getText().toString());
+        });
 
         findViewById(R.id.tvRegister).setOnClickListener(v ->
                 startActivity(new Intent(this, StudentRegisterActivity.class)));

@@ -93,7 +93,7 @@ public class FakeStudentRepository implements StudentPageRepository {
                 "Natasha Zulu", "Kondwani Mumba", "Lweendo Siame", "Given Chirwa",
                 "Mutinta Sakala", "Emmanuel Sinkala", "Ruth Kabwe", "Joseph Lungu",
         };
-        String[] programmes = {"CS", "IT", "DS"};
+        String[] programmes = {"CS", "IT", "DS", "CYB"};
         String[] groups = {"G01", "G02", "G03", "G04", "UNASSIGNED"};
 
         List<Student> students = new ArrayList<>();

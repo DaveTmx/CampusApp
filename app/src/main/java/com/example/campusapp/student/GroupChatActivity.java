@@ -16,7 +16,7 @@ import androidx.core.content.ContextCompat;
 import com.example.campusapp.R;
 import com.example.campusapp.data.AppData;
 import com.example.campusapp.data.ChatMessage;
-import com.example.campusapp.data.Student;
+import com.example.campusapp.data.StoredStudent;
 import com.example.campusapp.model.Session;
 import com.example.campusapp.util.ServiceLocator;
 
@@ -27,7 +27,7 @@ import java.util.Locale;
 
 /**
  * Group chat for the logged-in student's own group. Every member of that
- * group sees the same message list (matched by Student.group), so it's
+ * group sees the same message list (matched by StoredStudent.group), so it's
  * effectively a small update board scoped to G01/G02/G03/etc.
  */
 public class GroupChatActivity extends AppCompatActivity {
@@ -47,7 +47,7 @@ public class GroupChatActivity extends AppCompatActivity {
         Session session = ServiceLocator.authRepository(this).currentSession();
         String meId = (session != null && !session.isLecturer())
                 ? session.accountId : AppData.CURRENT_STUDENT_ID;
-        Student me = appData.findStudentById(meId);
+        StoredStudent me = appData.findStudentById(meId);
         groupName = me != null ? me.group : "";
         myName = me != null ? me.name : "You";
 

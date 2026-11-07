@@ -5,8 +5,8 @@
     <string name="error_number_invalid">Student number must be exactly 9 digits, with no spaces</string>
     <string name="error_programme_required">Choose a programme</string>
     <string name="error_group_invalid">Choose a lab group from the list</string>
-    <string name="error_claim_required">Enter your claim code</string>
-    <string name="error_claim_rejected">That claim code does not match this student number</string>
+    <string name="error_email_invalid">Enter a valid email address, e.g. name@example.com</string>
+    <string name="error_email_taken">An account with this email address already exists</string>
     <string name="error_password_short">Password must be at least 8 characters</string>
     <string name="error_username_required">Enter your username or student number</string>
     <string name="error_password_required">Enter your password</string>
@@ -15,7 +15,7 @@
     <string name="msg_saved_pending">Saved on this phone. It will sync when you are online</string>
     <string name="msg_draft_saved">Draft saved on this phone</string>
     <string name="msg_duplicate_number">Another student already has this student number</string>
-    <string name="msg_group_full">That group is full (15 students). The previous group was kept</string>
+    <string name="msg_group_full">That group is full (16 students). The previous group was kept</string>
     <string name="msg_conflict">Someone else changed this record. Review both versions</string>
     <string name="msg_server_rejected">The server rejected these details. Check the fields and try again</string>
     <string name="msg_login_failed">Incorrect username or password</string>
@@ -26,4 +26,12 @@
     <string name="msg_deleted">Student deleted</string>
     <string name="msg_correction_requested">Correction request sent to your lecturer</string>
     <string name="msg_generic_error">Something went wrong. Try again</string>
+    <string name="msg_locked_out">Too many wrong attempts. Try again in 15 minutes</string>
+    <string name="msg_staff_not_approved">This email is not on the approved staff list. Contact the IT department</string>
+    <string name="msg_staff_account_exists">A staff account already exists for this email. Log in instead</string>
+    <string name="msg_staff_setup_done">Staff account created. Log in with your password and the code emailed to you</string>
+    <string name="msg_otp_not_configured">Email codes are not set up yet. Try again later</string>
+    <string name="msg_staff_code_wrong_start_again">That code can no longer be used. Start again to get a new one</string>
+    <string name="error_password_mismatch">Passwords don\'t match</string>
+    <string name="hint_staff_email">Your university email</string>
 </resources>

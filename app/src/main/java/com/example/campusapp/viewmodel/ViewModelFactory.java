@@ -38,7 +38,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         } else if (modelClass == ProfileViewModel.class) {
             viewModel = new ProfileViewModel(studentRepository);
         } else if (modelClass == RegisterViewModel.class) {
-            viewModel = new RegisterViewModel(studentRepository,
+            viewModel = new RegisterViewModel(studentRepository, authRepository,
                     SavedStateHandleSupport.createSavedStateHandle(extras));
         } else if (modelClass == RosterViewModel.class) {
             viewModel = new RosterViewModel(studentRepository,

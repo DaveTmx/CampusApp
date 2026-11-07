@@ -6,143 +6,84 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.campusapp.R;
-import com.example.campusapp.data.repository.LocalAuthRepository;
-import com.example.campusapp.util.OtpService;
+import com.example.campusapp.data.repository.AuthRepository;
+import com.example.campusapp.model.Result;
 import com.example.campusapp.util.ServiceLocator;
-import com.example.campusapp.util.Validation;
 
 /**
- * Forgot password. Step 1: say who you are, and a six-digit code is emailed to the address on that
- * account. Step 2: enter the code and a new password.
+ * Forgot password. The student gives their email address (or student number) and the server emails
+ * a link. The link opens a page in the browser where the new password is chosen, so the phone never
+ * handles a reset code. The reply is the same whether or not the account exists.
  */
 public class ResetPasswordActivity extends AppCompatActivity {
 
     private EditText etEmail;
-    private EditText etOtp;
-    private EditText etNewPassword;
-    private LinearLayout layoutEmailStep;
     private LinearLayout layoutOtpStep;
     private Button btnSendOtp;
 
-    private LocalAuthRepository auth;
-    private OtpService otp;
-
-    /** The account the code was sent for. Null until step 1 succeeds. */
-    private LocalAuthRepository.AccountInfo account;
+    private AuthRepository auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reset_password);
 
-        auth = ServiceLocator.authRepository(this);
-        otp = ServiceLocator.otpService();
+        auth = ServiceLocator.remoteAuthRepository(this);
 
         findViewById(R.id.btnBack).setOnClickListener(v -> finish());
 
         etEmail = findViewById(R.id.etEmail);
-        etOtp = findViewById(R.id.etOtp);
-        etNewPassword = findViewById(R.id.etNewPassword);
-        layoutEmailStep = findViewById(R.id.layoutEmailStep);
         layoutOtpStep = findViewById(R.id.layoutOtpStep);
         btnSendOtp = findViewById(R.id.btnSendOtp);
-        Button btnReset = findViewById(R.id.btnResetPassword);
 
-        btnSendOtp.setOnClickListener(v -> sendCode());
-        btnReset.setOnClickListener(v -> resetPassword());
+        // The code step from the old on-phone flow is no longer used.
+        layoutOtpStep.setVisibility(View.GONE);
+        btnSendOtp.setText("Send reset link");
+        btnSendOtp.setOnClickListener(v -> sendLink());
     }
 
-    private void sendCode() {
+    /** Timeouts and no connection get their own message, so the student knows to try again. */
+    private String messageFor(Result.Status status) {
+        switch (status) {
+            case OFFLINE:
+                return getString(R.string.msg_reset_connection);
+            case RATE_LIMITED:
+                return getString(R.string.msg_rate_limited);
+            default:
+                return getString(R.string.msg_generic_error);
+        }
+    }
+
+    private void sendLink() {
         String who = etEmail.getText().toString().trim();
         if (who.isEmpty()) {
-            etEmail.setError("Enter your email, username or student number");
+            etEmail.setError("Enter your email address");
             return;
         }
-        LocalAuthRepository.AccountInfo found = auth.findAccount(who);
-        if (found == null) {
-            etEmail.setError("No account found with that email or number");
-            return;
-        }
-        if (found.email.isEmpty()) {
-            etEmail.setError("This account has no email address on file");
+        if (!who.contains("@")) {
+            // Students can sign in with a student number, but a reset link needs the email address.
+            etEmail.setError("Enter the email address your account was registered with");
             return;
         }
 
         btnSendOtp.setEnabled(false);
-        otp.send(found.email, (emailed, demoCode, error) -> {
+        auth.requestPasswordReset(who, result -> runOnUiThread(() -> {
             if (isFinishing() || isDestroyed()) return;
             btnSendOtp.setEnabled(true);
-            if (error != null) {
-                Toast.makeText(this, "Could not send the code: " + error, Toast.LENGTH_LONG).show();
-                return;
-            }
-            account = found;
-            layoutEmailStep.setVisibility(View.GONE);
-            layoutOtpStep.setVisibility(View.VISIBLE);
-            if (emailed) {
-                Toast.makeText(this, "Code sent to " + mask(found.email), Toast.LENGTH_LONG).show();
-            } else {
+            if (result.status == Result.Status.SUCCESS) {
                 new AlertDialog.Builder(this)
-                        .setTitle("Demo mode")
-                        .setMessage("Email sending is not set up yet, so here is your code:\n\n"
-                                + demoCode + "\n\nIt would normally arrive at " + mask(found.email) + ".")
-                        .setPositiveButton("OK", null)
+                        .setTitle("Check your email")
+                        .setMessage(getString(R.string.msg_reset_sent))
+                        .setCancelable(false)
+                        .setPositiveButton("OK", (d, which) -> finish())
                         .show();
+            } else {
+                etEmail.setError(messageFor(result.status));
             }
-        });
-    }
-
-    private void resetPassword() {
-        if (account == null) {
-            return;
-        }
-        String code = etOtp.getText().toString().trim();
-        String password = etNewPassword.getText().toString();
-
-        if (code.length() != 6) {
-            etOtp.setError("Enter the 6-digit code");
-            return;
-        }
-        Integer problem = Validation.passwordError(password);
-        if (problem != null) {
-            etNewPassword.setError(getString(problem));
-            return;
-        }
-
-        OtpService.Check result = otp.verify(account.email, code);
-        switch (result) {
-            case OK:
-                if (auth.resetPassword(account.username, password)) {
-                    Toast.makeText(this, "Password changed. Please sign in.", Toast.LENGTH_LONG).show();
-                    finish();
-                } else {
-                    Toast.makeText(this, "Could not change the password.", Toast.LENGTH_LONG).show();
-                }
-                break;
-            case WRONG:
-                etOtp.setError("That code is not correct");
-                break;
-            default: // expired, too many tries, or no code: start again
-                Toast.makeText(this, "That code can no longer be used. Request a new one.", Toast.LENGTH_LONG).show();
-                account = null;
-                etOtp.setText("");
-                layoutOtpStep.setVisibility(View.GONE);
-                layoutEmailStep.setVisibility(View.VISIBLE);
-                break;
-        }
-    }
-
-    /** chileshe@example.com -> ch******@example.com */
-    private static String mask(String email) {
-        int at = email.indexOf('@');
-        if (at < 3) return email;
-        StringBuilder stars = new StringBuilder();
-        for (int i = 2; i < at; i++) stars.append('*');
-        return email.substring(0, 2) + stars + email.substring(at);
+        }));
     }
 }
