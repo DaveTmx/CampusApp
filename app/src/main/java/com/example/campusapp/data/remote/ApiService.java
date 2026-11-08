@@ -35,6 +35,18 @@ public interface ApiService {
     @PUT("api/students/{id}")
     Call<StudentDtos.EditResponse> editStudent(@Path("id") String studentId, @Body StudentDtos.EditRequest body);
 
+    @GET("api/requests")
+    Call<StudentDtos.RequestsEnvelope> listRequests(@Query("status") String status);
+
+    @POST("api/requests/{id}/approve")
+    Call<Void> approveRequest(@Path("id") int requestId);
+
+    @POST("api/requests/{id}/reject")
+    Call<Void> rejectRequest(@Path("id") int requestId);
+
+    @POST("api/students/{id}/requests")
+    Call<Void> createStudentRequest(@Path("id") String studentId, @Body StudentDtos.RequestBody body);
+
     @POST("api/students/{id}/assign")
     Call<StudentDtos.AssignResponse> assignGroup(@Path("id") String studentId, @Body StudentDtos.AssignRequest body);
 
@@ -49,6 +61,7 @@ public interface ApiService {
     @POST("api/operations")
     Call<StudentDtos.OperationResponse> submitOperation(@Body StudentDtos.OperationRequest body);
 
+    /** Group capacity and occupancy for G01 to G14. */
     @GET("api/groups")
     Call<StudentDtos.GroupsResponse> getGroups();
 

@@ -49,7 +49,7 @@ exports.register = async (req, res) => {
 
   const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
 
-  try {
+  try {   token = await inTransaction(async (conn) => {
       const [account] = await conn.query(
         'INSERT INTO accounts (email, password_hash, full_name, role, is_active) VALUES (?, ?, ?, ?, 0)',
         [email, passwordHash, fullName, ROLES.STUDENT]
@@ -58,7 +58,7 @@ exports.register = async (req, res) => {
         'INSERT INTO students (student_id, student_name, student_number, programme_code, account_id) VALUES (?, ?, ?, ?, ?)',
         [randomUUID(), fullName, studentNumber, programmeCode, account.insertId]
       );
-    });
+       return issueVerificationToken(conn, account.insertId);});
   } catch (err) {
     if (err.code === 'ER_DUP_ENTRY' && err.message.includes('uq_accounts_email')) {
       return sendError(res, 409, 'DUPLICATE_EMAIL', 'An account with this email already exists');

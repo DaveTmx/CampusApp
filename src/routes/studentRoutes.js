@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const studentsController = require('../controllers/studentsController');
+const requestsController = require('../controllers/requestsController');
 const { requireAuth, requireRole } = require('../middleware/auth');
 const { ROLES } = require('../constants');
 
@@ -19,5 +20,9 @@ router.put('/:id', requireAuth, studentsController.editStudent);
 router.post('/:id/assign', requireAuth, LECTURER, studentsController.assignToGroup);
 router.post('/:id/unassign', requireAuth, LECTURER, studentsController.unassignFromGroup);
 router.delete('/:id', requireAuth, LECTURER, studentsController.deleteStudent);
+
+// Student requests: a student asks for a group change or number correction; a lecturer decides.
+router.get('/:id/requests', requireAuth, requestsController.listForStudent);
+router.post('/:id/requests', requireAuth, requireRole(ROLES.STUDENT), requestsController.createRequest);
 
 module.exports = router;

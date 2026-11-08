@@ -87,14 +87,21 @@ public class ValidationTest {
         assertEquals(Integer.valueOf(R.string.error_programme_required), Validation.programmeError(null));
     }
 
+    // ---- groups: G01-G14, or blank for Unassigned ----
 
     @Test
+    public void groupsG01ToG14AndBlankAreAccepted() {
         assertNull(Validation.groupError(null));
         assertNull(Validation.groupError(""));
         assertNull(Validation.groupError("G01"));
+        assertNull(Validation.groupError("G05"));
+        assertNull(Validation.groupError("G14"));
     }
 
     @Test
+    public void groupOutsideG01ToG14IsRejected() {
+        assertEquals(Integer.valueOf(R.string.error_group_invalid), Validation.groupError("G15"));
+        assertEquals(Integer.valueOf(R.string.error_group_invalid), Validation.groupError("G00"));
     }
 
     // ---- password ----

@@ -16,9 +16,9 @@
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:src="@drawable/logo"
-        android:scaleType="fitCenter"
+        android:scaleType="centerCrop"
         android:background="@drawable/bg_pill_selected"
-        android:padding="8dp"
+        android:padding="0dp"
         android:contentDescription="@string/logo_desc"/>
 
     <TextView

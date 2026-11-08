@@ -75,6 +75,37 @@ public final class StudentDtos {
     }
 
     /** POST /api/students/:id/assign. */
+    /** One student request, as GET /api/requests returns it (lecturer view includes the student). */
+    public static class RequestDto {
+        public int id;
+        public String studentId;
+        public String type;
+        public String requestedValue;
+        public String status;
+        public String createdAt;
+        public String decidedAt;
+        public String studentName;
+        public String studentNumber;
+        public String currentGroup;
+    }
+
+    /** GET /api/requests (200). */
+    public static class RequestsEnvelope {
+        public boolean success;
+        public java.util.List<RequestDto> requests;
+    }
+
+    /** POST /api/students/:id/requests. type is "GROUP" or "NUMBER". */
+    public static class RequestBody {
+        public final String type;
+        public final String value;
+
+        public RequestBody(String type, String value) {
+            this.type = type;
+            this.value = value;
+        }
+    }
+
     public static class AssignRequest {
         public final String groupCode;
 

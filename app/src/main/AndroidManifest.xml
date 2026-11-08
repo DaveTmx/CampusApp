@@ -90,8 +90,20 @@
         <activity
             android:name=".student.StudentScheduleActivity"
             android:exported="false" />
+        <activity
+            android:name=".lecturer.StudentRequestsActivity"
+            android:exported="false" />
         <activity android:name=".lecturer.LecturerRosterActivity" android:exported="false"/>
         <activity android:name=".lecturer.LecturerSummaryActivity" android:exported="false"/>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

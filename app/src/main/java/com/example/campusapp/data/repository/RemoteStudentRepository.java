@@ -1,6 +1,7 @@
 package com.example.campusapp.data.repository;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.MediatorLiveData;
 
 import com.example.campusapp.data.local.entities.OperationEntity;
@@ -9,10 +10,12 @@ import com.example.campusapp.data.remote.StudentDtos;
 import com.example.campusapp.data.remote.StudentPageDto;
 import com.example.campusapp.model.GroupCount;
 import com.example.campusapp.model.Result;
+import com.example.campusapp.model.Session;
 import com.example.campusapp.model.Student;
 import com.example.campusapp.data.sync.OutboxQueue;
 import com.example.campusapp.model.StudentPage;
 import com.example.campusapp.util.AppExecutors;
+import com.example.campusapp.util.SessionManager;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
@@ -43,6 +46,10 @@ public class RemoteStudentRepository implements StudentRepository {
     private final OutboxQueue outbox;
     private final Gson gson = new Gson();
     private final MediatorLiveData<List<GroupCount>> groupCounts = new MediatorLiveData<>();
+    /** The first page of the last successful roster load. Shown, labelled as cached, when offline. */
+    private volatile List<Student> lastRoster = new ArrayList<>();
+    /** The signed-in student's own record, from the server. */
+    private final MutableLiveData<Student> ownProfile = new MutableLiveData<>();
 
     /** Call from the main thread: the constructor observes the local counts. */
     public RemoteStudentRepository(ApiService api, StudentRepository local, OutboxQueue outbox) {
@@ -80,6 +87,9 @@ public class RemoteStudentRepository implements StudentRepository {
                         // Room must not be queried on the main thread. Retrofit calls back on the main thread,
                         // so the queued-status lookup runs in the background and the result returns to the UI.
                         boolean more = body.hasMore;
+                        if (page == 0) {
+                            lastRoster = new ArrayList<>(students);
+                        }
                         AppExecutors.get().diskIO().execute(() -> {
                             applyQueuedStatus(students);
                             outbox.flushIfNeeded();
@@ -90,9 +100,29 @@ public class RemoteStudentRepository implements StudentRepository {
 
                     @Override
                     public void onFailure(Call<StudentPageDto> call, Throwable t) {
+                        if (t instanceof IOException && page == 0 && !lastRoster.isEmpty()) {
+                            answerFromLastRoster(callback);
+                            return;
+                        }
                         callback.onResult(Result.of(offlineOrError(t), null));
                     }
                 });
+    }
+
+    /**
+     * Offline: answers with the last roster loaded from the server, with queued changes shown
+     * as pending. The result is marked as cached so the screen can say it may be out of date.
+     */
+    private void answerFromLastRoster(RepoCallback<StudentPage> callback) {
+        AppExecutors.get().diskIO().execute(() -> {
+            List<Student> students = new ArrayList<>();
+            for (Student s : lastRoster) {
+                students.add(copyOf(s));
+            }
+            applyQueuedStatus(students);
+            AppExecutors.get().runOnMain(() -> callback.onResult(
+                    Result.of(Result.Status.OFFLINE, new StudentPage(students, false, true))));
+        });
     }
 
     @Override
@@ -223,26 +253,88 @@ public class RemoteStudentRepository implements StudentRepository {
 
     @Override
     public LiveData<Student> observeOwnProfile() {
+        refreshOwnProfile();
+        return ownProfile;
     }
 
     @Override
     public void updateOwnDetails(String name, String programme, RepoCallback<Student> callback) {
+        Student current = ownProfile.getValue();
+        if (current == null) {
+            callback.onResult(Result.of(Result.Status.NOT_FOUND, null));
+            return;
         }
+        if (!programme.equals(current.programme)) {
+            // The server lets a student change their name only. A programme change goes through the lecturer.
+            callback.onResult(Result.of(Result.Status.NOT_ALLOWED, current));
+            return;
+        }
+        // Null programme and number are left out of the request, so the server only sees the name change.
+        StudentDtos.EditRequest body = new StudentDtos.EditRequest(current.version, trimmed(name), null, null);
+        api.editStudent(current.studentId, body).enqueue(new Callback<StudentDtos.EditResponse>() {
+            @Override
+            public void onResponse(Call<StudentDtos.EditResponse> call,
+                                   Response<StudentDtos.EditResponse> response) {
+                StudentDtos.EditResponse reply = response.body();
+                if (response.isSuccessful() && reply != null) {
+                    Student saved = copyOf(current);
+                    saved.name = trimmed(name);
+                    saved.version = reply.version;
+                    ownProfile.postValue(saved);
+                    callback.onResult(Result.of(Result.Status.SUCCESS, saved));
+                    return;
+                }
+                callback.onResult(Result.of(statusOf(response, parseError(response)), null));
+            }
+
+            @Override
+            public void onFailure(Call<StudentDtos.EditResponse> call, Throwable t) {
+                callback.onResult(Result.of(offlineOrError(t), null));
+            }
+        });
+    }
 
     @Override
     public void requestGroupChange(String group, RepoCallback<Student> callback) {
-        local.requestGroupChange(group, callback);
+        Student current = ownProfile.getValue();
+        sendStudentRequest("GROUP", group, result -> callback.onResult(Result.of(result.status, current)));
     }
 
     @Override
     public void requestNumberCorrection(String proposedNumber, RepoCallback<Void> callback) {
-        local.requestNumberCorrection(proposedNumber, callback);
+        sendStudentRequest("NUMBER", proposedNumber, result -> callback.onResult(Result.of(result.status, null)));
+    }
+
+    /** Sends a request to the server. It stays PENDING until a lecturer approves or rejects it. */
+    private void sendStudentRequest(String type, String value, RepoCallback<Void> callback) {
+        Student current = ownProfile.getValue();
+        if (current == null) {
+            callback.onResult(Result.of(Result.Status.NOT_FOUND, null));
+            return;
+        }
+        api.createStudentRequest(current.studentId, new StudentDtos.RequestBody(type, value))
+                .enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if (response.isSuccessful()) {
+                            callback.onResult(Result.of(Result.Status.PENDING, null));
+                            return;
+                        }
+                        callback.onResult(Result.of(statusOf(response, parseError(response)), null));
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        callback.onResult(Result.of(offlineOrError(t), null));
+                    }
+                });
     }
 
     @Override
     public void syncNow() {
         local.syncNow();
         refreshGroupCounts();
+        refreshOwnProfile();
     }
 
     // ----- Internals -----
@@ -412,6 +504,19 @@ public class RemoteStudentRepository implements StudentRepository {
         s.version = d.version;
         s.syncStatus = Student.SYNCED;
         return s;
+    }
+
+    /** Loads the signed-in student's own record. For students the account ID is the student ID. */
+    private void refreshOwnProfile() {
+        Session session = SessionManager.getCurrent();
+        if (session == null || session.accountId == null || session.accountId.isEmpty()) {
+            return;
+        }
+        getStudent(session.accountId, result -> {
+            if (result.data != null) {
+                ownProfile.postValue(result.data);
+            }
+        });
     }
 
     private static Student fromRecord(StudentDtos.RecordDto r) {

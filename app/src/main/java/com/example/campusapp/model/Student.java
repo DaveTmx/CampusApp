@@ -27,4 +27,5 @@ public class Student {
     public String syncStatus;
     /** Record version from the server, used to detect conflicting edits. */
     public int version;
+    public CharSequence email;
 }
