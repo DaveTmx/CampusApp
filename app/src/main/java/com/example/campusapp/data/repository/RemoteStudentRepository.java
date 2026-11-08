@@ -223,13 +223,11 @@ public class RemoteStudentRepository implements StudentRepository {
 
     @Override
     public LiveData<Student> observeOwnProfile() {
-        return local.observeOwnProfile();
     }
 
     @Override
     public void updateOwnDetails(String name, String programme, RepoCallback<Student> callback) {
-        local.updateOwnDetails(name, programme, callback);
-    }
+        }
 
     @Override
     public void requestGroupChange(String group, RepoCallback<Student> callback) {

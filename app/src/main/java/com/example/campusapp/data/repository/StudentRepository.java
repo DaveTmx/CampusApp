@@ -55,7 +55,6 @@ public interface StudentRepository {
     /**
      * @param query     name or student number, or "" for everyone
      * @param programme CS, IT, DS, or null for any
-     * @param group     G01..G04, UNASSIGNED, or null for any
      * @param page      0 for the first page
      */
     void search(String query, String programme, String group, int page,

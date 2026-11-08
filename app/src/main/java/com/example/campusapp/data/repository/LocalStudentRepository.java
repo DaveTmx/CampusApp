@@ -388,7 +388,6 @@ public class LocalStudentRepository implements StudentRepository {
         return number == null ? null : appData.findStudentByNumber(number.trim());
     }
 
-    /** True when the group already has its 15 students, not counting the student asking. */
     private boolean isFull(String group, String exceptStudentId) {
         int n = 0;
         for (com.example.campusapp.data.StoredStudent s : appData.getStudents()) {

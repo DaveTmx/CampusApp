@@ -20,7 +20,6 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-        buildConfigField("String", "API_BASE_URL", "\"$apiBaseUrl\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -33,9 +32,10 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "API_BASE_URL", "\"https://ultram-writes-nickel-syndication.trycloudflare.com/\"")
+        }
         release {
-            // Uses apiBaseUrl from the top of this file. Release builds need an https address.
-            buildConfigField("String", "API_BASE_URL", "\"$apiBaseUrl\"")
             optimization {
                 enable = false
             }

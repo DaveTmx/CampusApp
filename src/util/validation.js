@@ -17,14 +17,6 @@ function cleanText(value, max) {
   return trimmed.length > 0 && trimmed.length <= max ? trimmed : null;
 }
 
-// Student name: trimmed, 2-100 characters, no control characters.
-// The Android app is stricter (letters, spaces, . ' - only), so a name the app
-// accepts is always accepted here and an offline edit never fails to sync on the name.
-function cleanName(value) {
-  const name = cleanText(value, 100);
-  return name !== null && name.length >= 2 && !/\p{Cc}/u.test(name) ? name : null;
-}
-
 // Parses a query-string integer. Returns `def` when absent, the number when
 // valid, or null when present but out of range or not a whole number.
 function parseIntParam(value, { def, min, max }) {
@@ -43,4 +35,3 @@ function isPlainObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
-module.exports = { normalizeEmail, isValidEmail, cleanText, cleanName, parseIntParam, escapeLike, isPlainObject };

@@ -49,7 +49,6 @@ public interface ApiService {
     @POST("api/operations")
     Call<StudentDtos.OperationResponse> submitOperation(@Body StudentDtos.OperationRequest body);
 
-    /** Group capacity and occupancy for G01 to G04. */
     @GET("api/groups")
     Call<StudentDtos.GroupsResponse> getGroups();
 

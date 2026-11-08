@@ -43,7 +43,7 @@
                         <TextView android:id="@+id/tvGroup" android:layout_width="wrap_content" android:layout_height="wrap_content"
                             android:text="Group G02" android:textStyle="bold" android:textSize="15sp" android:textColor="@color/text_dark"/>
                         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp"
-                            android:text="12 / 15 members • Systems Development" android:textSize="12sp" android:textColor="@color/text_gray"/>
+                            android:id="@+id/tvGroupMembers" android:text="" android:textSize="12sp" android:textColor="@color/text_gray"/>
                     </LinearLayout>
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                         android:text="Confirmed" android:textColor="@color/badge_green" android:textStyle="bold" android:textSize="12sp"/>

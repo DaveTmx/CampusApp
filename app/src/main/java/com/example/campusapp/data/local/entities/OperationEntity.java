@@ -34,7 +34,6 @@ public class OperationEntity {
     @NonNull
     public String studentId;
 
-    /** G01..G04 for ASSIGN_GROUP, otherwise null. */
     @Nullable
     public String groupCode;
 

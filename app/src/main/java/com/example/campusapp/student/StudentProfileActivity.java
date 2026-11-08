@@ -21,6 +21,7 @@ import com.example.campusapp.NavTab;
 import com.example.campusapp.R;
 import com.example.campusapp.RoleSelectActivity;
 import com.example.campusapp.data.Programs;
+import com.example.campusapp.model.GroupCount;
 import com.example.campusapp.model.Student;
 import com.example.campusapp.util.ServiceLocator;
 import com.example.campusapp.util.Validation;
@@ -28,6 +29,7 @@ import com.example.campusapp.viewmodel.AuthViewModel;
 import com.example.campusapp.viewmodel.ProfileViewModel;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,6 +40,8 @@ public class StudentProfileActivity extends AppCompatActivity {
 
     private ProfileViewModel viewModel;
     private AuthViewModel authViewModel;
+    private Student currentStudent;
+    private List<GroupCount> groupCounts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +68,10 @@ public class StudentProfileActivity extends AppCompatActivity {
         findViewById(R.id.btnLogout).setOnClickListener(v -> showLogoutDialog());
 
         viewModel.getProfile().observe(this, this::bindStudent);
+        viewModel.getGroupCounts().observe(this, counts -> {
+            groupCounts = counts;
+            showMembers();
+        });
         viewModel.getMessage().observe(this, event -> {
             Integer id = event == null ? null : event.getIfNotHandled();
             if (id != null) {
@@ -90,6 +98,24 @@ public class StudentProfileActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.tvNumber)).setText("Student No: " + student.studentNumber);
         ((TextView) findViewById(R.id.tvGroup)).setText(group);
         ((TextView) findViewById(R.id.tvProgramme)).setText("BSc in " + Programs.toLabel(student.programme));
+        currentStudent = student;
+        showMembers();
+    }
+
+    /** "12 / 16 members" for the student's group, from the server's totals. Blank until both have loaded. */
+    private void showMembers() {
+        TextView members = findViewById(R.id.tvGroupMembers);
+        if (currentStudent == null || currentStudent.confirmedGroup == null || groupCounts == null) {
+            members.setText("");
+            return;
+        }
+        for (GroupCount c : groupCounts) {
+            if (currentStudent.confirmedGroup.equals(c.group)) {
+                members.setText(c.count + " / " + GroupCount.CAPACITY + " members");
+                return;
+            }
+        }
+        members.setText("");
     }
 
     /** Name and programme: the two things a student may change without asking the lecturer. */
@@ -132,7 +158,7 @@ public class StudentProfileActivity extends AppCompatActivity {
     }
 
     private void promptForGroup() {
-        EditText input = newInput("New group (G01 to G04)", "");
+        EditText input = newInput("New group (G01 to G14)", "");
         new AlertDialog.Builder(this)
                 .setTitle("Request group change")
                 .setView(input)

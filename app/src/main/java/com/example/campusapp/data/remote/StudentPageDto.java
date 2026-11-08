@@ -17,7 +17,6 @@ public class StudentPageDto {
         public String student_number;
         public String full_name;
         public String programme;
-        /** G01..G04, or null when the student is Unassigned. */
         public String confirmed_group;
         public int version;
     }

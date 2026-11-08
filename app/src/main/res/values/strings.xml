@@ -4,4 +4,6 @@
     <string name="logo_desc">Campus Connect Logo</string>
     <string name="notices_bell_description">Notices, %1$d unread</string>
     <string name="map">Map</string>
+    <string name="student_roster">Student Roster</string>
+    <string name="academic_class_management">Academic Class Management</string>
 </resources>

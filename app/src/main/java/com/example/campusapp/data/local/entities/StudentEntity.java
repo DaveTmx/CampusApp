@@ -27,7 +27,6 @@ public class StudentEntity {
     @NonNull
     public String programme;
 
-    /** G01..G04, or null when Unassigned. */
     @Nullable
     public String confirmedGroup;
 

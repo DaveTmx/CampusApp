@@ -68,7 +68,7 @@ public class RosterViewModel extends ViewModel {
         return state.getLiveData(KEY_PROGRAMME);
     }
 
-    /** G01..G04, StudentRepository.UNASSIGNED, or null for any group. */
+    /** G01..G14, StudentRepository.UNASSIGNED, or null for any group. */
     public LiveData<String> getGroupFilter() {
         return state.getLiveData(KEY_GROUP);
     }

@@ -18,9 +18,7 @@ app.use('/api/students', studentRoutes);
 
 const { makeLecturerToken } = require('./helpers/lecturerToken');
 const { JWT_SECRET } = require(path.join(__dirname, '../../src/middleware/auth'));
-const { GROUP_CAPACITY } = require(path.join(__dirname, '../../src/constants'));
-let lecturerToken;
-beforeAll(async () => { lecturerToken = await makeLecturerToken(); });
+const lecturerToken = jwt.sign({ id: 1, email: 'lecturer@test', role: 'lecturer' }, JWT_SECRET);
 
 async function resetFixture() {
   const sql = fs.readFileSync(path.join(__dirname, '../../database/seed-test-fixture.sql'), 'utf8');
@@ -41,7 +39,7 @@ async function countG01() {
   return cnt;
 }
 
-describe(`Challenge 1: atomic ${GROUP_CAPACITY}-student group concurrency limit`, () => {
+describe('Challenge 1: atomic 15-student group concurrency limit', () => {
   afterAll(async () => { await pool.end(); });
 
   test('20 repetitions: exactly one of two simultaneous requests wins the last place', async () => {
@@ -64,7 +62,7 @@ describe(`Challenge 1: atomic ${GROUP_CAPACITY}-student group concurrency limit`
       console.log(`Run ${i}: succeeded=${succeeded} full=${full} finalCount=${finalCount}`);
       expect(succeeded).toBe(1);
       expect(full).toBe(1);
-      expect(finalCount).toBe(GROUP_CAPACITY);
+      expect(finalCount).toBe(15);
     }
   });
 });

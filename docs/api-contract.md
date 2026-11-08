@@ -58,7 +58,6 @@ Register errors: 400 `VALIDATION_FAILED` (with `fields`), 409 `DUPLICATE_EMAIL`,
 | POST | `/api/students` | lecturer | `{ studentName, studentNumber, programmeCode, groupCode? }`. 201. 409 `DUPLICATE_NUMBER`, or `GROUP_FULL` (rolls back, no student created) |
 | GET | `/api/students/:id` | lecturer, or student for own record | 200 `{ student }`. 403 `NOT_OWNER`, 404, 410 `STUDENT_DELETED` |
 | PUT | `/api/students/:id` | lecturer, or student for own record | `{ baseVersion, studentName?, programmeCode?, studentNumber? }`. Lecturers may change all three; `studentNumber` must be exactly 9 digits and unique. Students may change `studentName` only. 409 `CONFLICT` with `currentRecord`. 410 `STUDENT_DELETED`. 403 `FIELD_NOT_ALLOWED` / `NOT_OWNER` |
-| POST | `/api/students/:id/assign` | lecturer | `{ groupCode }` (G01-G14). 409 `GROUP_FULL`, 404 `STUDENT_NOT_FOUND` |
 | DELETE | `/api/students/:id` | lecturer | Soft delete, idempotent. 200 `{ releasedGroup }` or `{ alreadyDeleted: true }` |
 | POST | `/api/students/:id/unassign` | lecturer | Removes the student from their group. Idempotent. 200 `{ success, groupCode: null }`. 404 `STUDENT_NOT_FOUND`, 410 `STUDENT_DELETED` |
 
@@ -70,7 +69,6 @@ concurrent assignments cannot overfill a group.
 
 | Method | Path | Role | Notes |
 |---|---|---|---|
-| GET | `/api/groups` | any signed-in user | `{ data: [{ group_code, capacity, occupied }] }` for the lab groups G01-G14 |
 | POST | `/api/groups` | lecturer | `{ name, description?, courseCode? }` creates a campus study group (`study_groups`). 201 `{ groupId }` |
 
 ## Operations (idempotent sync)

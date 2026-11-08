@@ -11,9 +11,9 @@
 
         <LinearLayout style="@style/SectionHeader">
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="Student Roster" android:textColor="@color/white" android:textSize="22sp" android:textStyle="bold"/>
+                android:text="@string/student_roster" android:textColor="@color/white" android:textSize="22sp" android:textStyle="bold"/>
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp"
-                android:text="Academic Class Management" android:textColor="#B9C6DA" android:textSize="13sp"/>
+                android:text="@string/academic_class_management" android:textColor="#B9C6DA" android:textSize="13sp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -37,6 +37,16 @@
                 <TextView android:id="@+id/chipG02" style="@style/FilterChip" android:text="G02"/>
                 <TextView android:id="@+id/chipG03" style="@style/FilterChip" android:text="G03"/>
                 <TextView android:id="@+id/chipG04" style="@style/FilterChip" android:text="G04"/>
+                <TextView android:id="@+id/chipG05" style="@style/FilterChip" android:text="G05"/>
+                <TextView android:id="@+id/chipG06" style="@style/FilterChip" android:text="G06"/>
+                <TextView android:id="@+id/chipG07" style="@style/FilterChip" android:text="G07"/>
+                <TextView android:id="@+id/chipG08" style="@style/FilterChip" android:text="G08"/>
+                <TextView android:id="@+id/chipG09" style="@style/FilterChip" android:text="G09"/>
+                <TextView android:id="@+id/chipG10" style="@style/FilterChip" android:text="G10"/>
+                <TextView android:id="@+id/chipG11" style="@style/FilterChip" android:text="G11"/>
+                <TextView android:id="@+id/chipG12" style="@style/FilterChip" android:text="G12"/>
+                <TextView android:id="@+id/chipG13" style="@style/FilterChip" android:text="G13"/>
+                <TextView android:id="@+id/chipG14" style="@style/FilterChip" android:text="G14"/>
                 <TextView android:id="@+id/chipUnassigned" style="@style/FilterChip" android:text="Unassigned"/>
             </LinearLayout>
         </HorizontalScrollView>

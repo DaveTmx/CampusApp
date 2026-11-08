@@ -153,17 +153,6 @@ public class StudentRosterActivity extends AppCompatActivity {
         });
     }
 
-    /** Tapping a refused row: explain, then let the lecturer drop the change. */
-    private void confirmDismiss(Student student) {
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.sync_review_title)
-                .setMessage(R.string.sync_review_message)
-                .setPositiveButton(R.string.sync_discard, (d, which) ->
-                        viewModel.dismissRefused(student.studentId))
-                .setNegativeButton(R.string.sync_keep, null)
-                .show();
-    }
-
     // ----- The list -----
 
     private void render() {
@@ -177,18 +166,10 @@ public class StudentRosterActivity extends AppCompatActivity {
             View row = inflater.inflate(R.layout.item_roster_row, rosterContainer, false);
 
             ((TextView) row.findViewById(R.id.tvName)).setText(student.name);
-            String placement = student.confirmedGroup == null
-                    ? "Unassigned"
-                    : "Assigned: " + student.confirmedGroup;
-            String details = "No: " + student.studentNumber + " • " + placement
-                    + " • " + Programs.toLabel(student.programme);
-            if (Student.ACTION_REQUIRED.equals(student.syncStatus)) {
-                details += "\n" + getString(R.string.sync_action_required);
-                row.setOnClickListener(v -> confirmDismiss(student));
-            } else if (Student.PENDING.equals(student.syncStatus)) {
-                details += "\n" + getString(R.string.sync_pending);
-            }
-            ((TextView) row.findViewById(R.id.tvDetails)).setText(details);
+            String group = student.confirmedGroup == null ? "Unassigned" : student.confirmedGroup;
+            ((TextView) row.findViewById(R.id.tvDetails)).setText(
+                    "No: " + student.studentNumber + " • Assigned: " + group
+                            + " • " + Programs.toLabel(student.programme));
 
             Button btnEdit = row.findViewById(R.id.btnEdit);
             Button btnDelete = row.findViewById(R.id.btnDelete);
