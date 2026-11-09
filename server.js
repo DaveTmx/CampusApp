@@ -10,13 +10,14 @@ app.disable('x-powered-by');
 // Behind a proxy (e.g. nginx or a host load balancer) set TRUST_PROXY=1 so per-IP limits see real clients.
 app.set('trust proxy', process.env.TRUST_PROXY === '1' ? 1 : false);
 app.use(cors());
+// Testing aid: prints each request, so you can see whether the phone reaches the server.
+app.use((req, res, next) => { console.log(new Date().toLocaleTimeString(), req.method, req.path); next(); });
 app.use(express.json({ limit: '100kb' }));
 
 app.use('/api/groups', require('./src/routes/groupRoutes'));
 app.use('/api/auth', require('./src/routes/authRoutes'));
 app.use('/api/students', require('./src/routes/studentRoutes'));
 app.use('/api/operations', require('./src/routes/operationsRoutes'));
-app.use('/api/requests', require('./src/routes/requestRoutes'));
 
 // Health check: confirms the server can reach the database.
 app.get('/api/health', async (req, res) => {

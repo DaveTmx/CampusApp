@@ -6,3 +6,5 @@ node_modules/
 /local.properties
 /.idea
 /build
+backup_*.sql
+build/

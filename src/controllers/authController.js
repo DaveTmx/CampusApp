@@ -5,6 +5,7 @@
 // Lecturer accounts are never created here. Registration always makes a
 // 'student'. Lecturers are provisioned by scripts/create-lecturer.js, which only
 // accepts emails on the server-side APPROVED_LECTURER_EMAILS list.
+const { randomUUID, timingSafeEqual } = require('crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pool = require('../db/pool');
@@ -14,6 +15,7 @@ const { PROGRAMMES, LOCKOUT, ROLES } = require('../constants');
 const { hashToken, issueVerificationToken, issuePasswordResetToken, RESEND_COOLDOWN_SECONDS } = require('../services/verification');
 const { sendVerificationEmail, sendPasswordResetEmail } = require('../mailer');
 const { sendError } = require('../util/http');
+const { normalizeEmail, isValidEmail, cleanText, cleanName } = require('../util/validation');
 
 const BCRYPT_ROUNDS = 12;
 const SESSION_SECONDS = 12 * 60 * 60;
@@ -29,12 +31,24 @@ function getDummyHash() {
 
 // POST /api/auth/register  { fullName, email, password, studentNumber, programmeCode }
 // Creates an inactive student account and the matching student record, then emails a link.
+// Claim codes are stored as SHA-256 hashes and compared in constant time.
+function claimCodeMatches(storedHash, code) {
+  if (typeof storedHash !== 'string' || storedHash.length !== 64) return false;
+  const given = Buffer.from(hashToken(code), 'hex');
+  const stored = Buffer.from(storedHash, 'hex');
+  return given.length === stored.length && timingSafeEqual(given, stored);
+}
+
 exports.register = async (req, res) => {
   const body = req.body || {};
+  const fullName = cleanName(body.fullName);
   const email = normalizeEmail(body.email);
   const password = typeof body.password === 'string' ? body.password : '';
   const studentNumber = typeof body.studentNumber === 'string' ? body.studentNumber.trim() : '';
   const programmeCode = typeof body.programmeCode === 'string' ? body.programmeCode.trim().toUpperCase() : '';
+  // Optional. A student whose profile a lecturer already entered proves ownership with this code.
+  const rawClaim = body.claimCode;
+  const claimCode = typeof rawClaim === 'string' ? rawClaim.trim().toUpperCase() : '';
 
   const invalid = [];
   if (!fullName) invalid.push('fullName');
@@ -43,22 +57,63 @@ exports.register = async (req, res) => {
   if (password.length < 8 || Buffer.byteLength(password, 'utf8') > 72) invalid.push('password');
   if (!/^\d{9}$/.test(studentNumber)) invalid.push('studentNumber');
   if (!PROGRAMMES.includes(programmeCode)) invalid.push('programmeCode');
+  if (rawClaim !== undefined && rawClaim !== null && (typeof rawClaim !== 'string' || claimCode.length > 64)) {
+    invalid.push('claimCode');
+  }
   if (invalid.length > 0) {
     return sendError(res, 400, 'VALIDATION_FAILED', 'Some fields are missing or invalid', { fields: invalid });
   }
 
   const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
 
-  try {   token = await inTransaction(async (conn) => {
+  let outcome;
+  try {
+    outcome = await inTransaction(async (conn) => {
+      // Is there already a profile for this student number (for example one a lecturer entered)?
+      // The first look takes no lock, so two new registrations cannot deadlock on a gap lock;
+      // the unique key on student_number still stops a second profile.
+      const [[found]] = await conn.query('SELECT student_id FROM students WHERE student_number = ?', [studentNumber]);
+      let profile = null;
+      if (found) {
+        const [[locked]] = await conn.query(
+          'SELECT student_id, account_id, claim_code_hash, deleted_at FROM students WHERE student_id = ? FOR UPDATE',
+          [found.student_id]
+        );
+        profile = locked;
+        if (profile.account_id || profile.deleted_at) {
+          // Already claimed, or deleted (the number stays reserved).
+          return { rollback: true, failure: [409, 'DUPLICATE_NUMBER', 'A student with this student number already exists'] };
+        }
+        if (!claimCode) {
+          return { rollback: true, failure: [403, 'CLAIM_REQUIRED', 'This student number already has a profile. Enter the claim code from your lecturer.'] };
+        }
+        if (!claimCodeMatches(profile.claim_code_hash, claimCode)) {
+          return { rollback: true, failure: [403, 'CLAIM_INVALID', 'That claim code is not correct for this student number.'] };
+        }
+      } else if (claimCode) {
+        // A code only makes sense for a profile that exists; do not create a second one.
+        return { rollback: true, failure: [403, 'CLAIM_INVALID', 'That claim code is not correct for this student number.'] };
+      }
+
       const [account] = await conn.query(
         'INSERT INTO accounts (email, password_hash, full_name, role, is_active) VALUES (?, ?, ?, ?, 0)',
         [email, passwordHash, fullName, ROLES.STUDENT]
       );
-      await conn.query(
-        'INSERT INTO students (student_id, student_name, student_number, programme_code, account_id) VALUES (?, ?, ?, ?, ?)',
-        [randomUUID(), fullName, studentNumber, programmeCode, account.insertId]
-      );
-       return issueVerificationToken(conn, account.insertId);});
+      if (profile) {
+        // Link the new account to the existing profile. The code works only once.
+        await conn.query(
+          'UPDATE students SET account_id = ?, claimed_at = NOW(), claim_code_hash = NULL, version = version + 1 WHERE student_id = ?',
+          [account.insertId, profile.student_id]
+        );
+      } else {
+        await conn.query(
+          'INSERT INTO students (student_id, student_name, student_number, programme_code, account_id) VALUES (?, ?, ?, ?, ?)',
+          [randomUUID(), fullName, studentNumber, programmeCode, account.insertId]
+        );
+      }
+      const token = await issueVerificationToken(conn, account.insertId);
+      return { token, linked: Boolean(profile) };
+    });
   } catch (err) {
     if (err.code === 'ER_DUP_ENTRY' && err.message.includes('uq_accounts_email')) {
       return sendError(res, 409, 'DUPLICATE_EMAIL', 'An account with this email already exists');
@@ -68,6 +123,12 @@ exports.register = async (req, res) => {
     }
     throw err;
   }
+
+  if (outcome.failure) {
+    const [status, code, message] = outcome.failure;
+    return sendError(res, status, code, message);
+  }
+  const { token, linked } = outcome;
 
   try {
     await sendVerificationEmail({ to: email, fullName, token });
@@ -79,6 +140,7 @@ exports.register = async (req, res) => {
   res.status(201).json({
     success: true,
     status: 'PENDING_VERIFICATION',
+    linked,
     message: 'Account created. Open the link in the verification email before logging in.',
   });
 };
@@ -99,6 +161,12 @@ exports.verifyEmail = async (req, res) => {
     if (!row || row.used_at || !row.still_valid) {
       return { rollback: true, valid: false };
     }
+    // A deleted student's account stays disabled: the link must not bring it back.
+    const [[removed]] = await conn.query(
+      'SELECT 1 AS gone FROM students WHERE account_id = ? AND deleted_at IS NOT NULL',
+      [row.account_id]
+    );
+    if (removed) return { rollback: true, valid: false };
     await conn.query('UPDATE email_verification_tokens SET used_at = NOW() WHERE token_hash = ?', [hashToken(token)]);
     await conn.query('UPDATE accounts SET is_active = 1 WHERE id = ?', [row.account_id]);
     return { valid: true };
@@ -128,6 +196,13 @@ exports.resendVerification = async (req, res) => {
       [email]
     );
     if (!account) return null;
+
+    // Never send a link for an account that was disabled by deleting its student.
+    const [[removed]] = await conn.query(
+      'SELECT 1 AS gone FROM students WHERE account_id = ? AND deleted_at IS NOT NULL',
+      [account.id]
+    );
+    if (removed) return null;
 
     const [[last]] = await conn.query(
       'SELECT TIMESTAMPDIFF(SECOND, MAX(created_at), NOW()) AS age FROM email_verification_tokens WHERE account_id = ?',
@@ -205,6 +280,13 @@ exports.login = async (req, res) => {
   }
 
   if (!account.is_active) {
+    const [[removed]] = await pool.query(
+      'SELECT 1 AS gone FROM students WHERE account_id = ? AND deleted_at IS NOT NULL',
+      [account.id]
+    );
+    if (removed) {
+      return sendError(res, 403, 'ACCOUNT_DISABLED', 'This account has been disabled. Contact your lecturer.');
+    }
     return sendError(res, 403, 'EMAIL_NOT_VERIFIED', 'Verify your email before logging in. Check your inbox or request a new link.');
   }
 

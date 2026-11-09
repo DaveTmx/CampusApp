@@ -7,7 +7,7 @@ plugins {
 //   "http://10.0.2.2:5000/"                     Android emulator
 //   "https://your-address.trycloudflare.com/"   Cloudflare tunnel (new address each time it restarts)
 // The address must end with a slash. A release build needs https.
-val apiBaseUrl = "https://christmas-princeton-parliamentary-discusses.trycloudflare.com/"
+val apiBaseUrl = "https://thou-suffered-soundtrack-softball.trycloudflare.com/"
 
 android {
 
@@ -33,7 +33,7 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField("String", "API_BASE_URL", "\"https://christmas-princeton-parliamentary-discusses.trycloudflare.com/\"")
+            buildConfigField("String", "API_BASE_URL", "\"https://https://thou-suffered-soundtrack-softball.trycloudflare.com/\"")
         }
         release {
             optimization {

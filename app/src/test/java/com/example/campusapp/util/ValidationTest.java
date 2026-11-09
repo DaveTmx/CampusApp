@@ -100,7 +100,7 @@ public class ValidationTest {
 
     @Test
     public void groupOutsideG01ToG14IsRejected() {
-        assertEquals(Integer.valueOf(R.string.error_group_invalid), Validation.groupError("G15"));
+        assertEquals(Integer.valueOf(R.string.error_group_invalid), Validation.groupError("G16"));
         assertEquals(Integer.valueOf(R.string.error_group_invalid), Validation.groupError("G00"));
     }
 

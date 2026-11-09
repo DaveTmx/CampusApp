@@ -25,20 +25,8 @@ CREATE TABLE IF NOT EXISTS lab_groups (
 ) ENGINE=InnoDB;
 
 INSERT IGNORE INTO lab_groups (group_code, capacity) VALUES
-  ('G01', 16),
-  ('G02', 16),
-  ('G03', 16),
-  ('G04', 16),
-  ('G05', 16),
-  ('G06', 16),
-  ('G07', 16),
-  ('G08', 16),
-  ('G09', 16),
-  ('G10', 16),
-  ('G11', 16),
-  ('G12', 16),
-  ('G13', 16),
-  ('G14', 16);
+  ('G01', 16), ('G02', 16), ('G03', 16), ('G04', 16), ('G05', 16), ('G06', 16), ('G07', 16),
+  ('G08', 16), ('G09', 16), ('G10', 16), ('G11', 16), ('G12', 16), ('G13', 16), ('G14', 16);
 
 -- Login accounts. role is set by the server only: self-registration always
 -- creates 'student'; 'lecturer' accounts come from scripts/create-lecturer.js.
@@ -66,6 +54,8 @@ CREATE TABLE IF NOT EXISTS students (
   programme_code  CHAR(4) NOT NULL,
   group_code      CHAR(3) NULL,
   account_id      INT NULL,
+  claim_code_hash CHAR(64) NULL,                    -- SHA-256 of the one-time claim code
+  claimed_at      DATETIME NULL,
   version         INT NOT NULL DEFAULT 1,
   deleted_at      DATETIME NULL,                    -- soft delete; the number stays reserved
   UNIQUE KEY uq_student_number (student_number),
@@ -145,19 +135,4 @@ CREATE TABLE IF NOT EXISTS study_groups (
   course_code  VARCHAR(20) NULL,
   created_by   INT NULL,
   created_at   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
-
--- Student requests: a group change or a student-number correction. Nothing changes
--- until a lecturer approves it. One pending request per student and kind.
-CREATE TABLE IF NOT EXISTS student_requests (
-  id               INT AUTO_INCREMENT PRIMARY KEY,
-  student_id       CHAR(36) NOT NULL,
-  request_type     ENUM('GROUP_CHANGE','NUMBER_CORRECTION') NOT NULL,
-  requested_value  VARCHAR(20) NOT NULL,
-  status           ENUM('PENDING','APPROVED','REJECTED') NOT NULL DEFAULT 'PENDING',
-  created_at       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  decided_at       DATETIME NULL,
-  decided_by       INT NULL,
-  KEY idx_req_student (student_id, status),
-  CONSTRAINT fk_req_student FOREIGN KEY (student_id) REFERENCES students(student_id)
 ) ENGINE=InnoDB;

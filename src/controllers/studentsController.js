@@ -12,7 +12,7 @@ const pool = require('../db/pool');
 const { inTransaction } = require('../db/tx');
 const { GROUPS, PROGRAMMES, ROLES } = require('../constants');
 const { sendError } = require('../util/http');
-const { cleanText, escapeLike, parseIntParam } = require('../util/validation');
+const { cleanText, cleanName, escapeLike, parseIntParam } = require('../util/validation');
 
 const GROUP_ERROR_STATUS = { GROUP_FULL: 409, NO_SUCH_GROUP: 404, STUDENT_NOT_FOUND: 404 };
 
@@ -93,7 +93,7 @@ async function unassignTx(conn, studentId) {
 // and writes a tombstone. Already-deleted students return alreadyDeleted: true.
 async function softDeleteTx(conn, studentId, actorId) {
   const [[student]] = await conn.query(
-    'SELECT deleted_at, group_code FROM students WHERE student_id = ? FOR UPDATE',
+    'SELECT deleted_at, group_code, account_id FROM students WHERE student_id = ? FOR UPDATE',
     [studentId]
   );
   if (!student) return { error: 'STUDENT_NOT_FOUND' };
@@ -107,6 +107,11 @@ async function softDeleteTx(conn, studentId, actorId) {
     'INSERT IGNORE INTO deletion_markers (student_id, deleted_at, deleted_by) VALUES (?, NOW(), ?)',
     [studentId, actorId ?? null]
   );
+  // Disable the login too. requireAuth checks is_active on every request, so the
+  // student's current session stops working immediately.
+  if (student.account_id) {
+    await conn.query('UPDATE accounts SET is_active = 0 WHERE id = ?', [student.account_id]);
+  }
   return { ok: true, releasedGroup: student.group_code };
 }
 
@@ -125,7 +130,7 @@ exports.listStudents = async (req, res) => {
   }
   const group = req.query.group === undefined ? null : upperOrNull(req.query.group);
   if (req.query.group !== undefined && !GROUPS.includes(group)) {
-    return sendError(res, 400, 'VALIDATION_FAILED', 'group must be G01-G04');
+    return sendError(res, 400, 'VALIDATION_FAILED', `group must be one of ${GROUPS[0]}-${GROUPS[GROUPS.length - 1]}`);
   }
   const unassigned = req.query.unassigned === 'true';
   if (unassigned && group) {
@@ -172,7 +177,7 @@ exports.listStudents = async (req, res) => {
 // POST /api/students  { studentName, studentNumber, programmeCode, groupCode? }   (lecturer)
 exports.createStudent = async (req, res) => {
   const body = req.body || {};
-  const studentName = cleanText(body.studentName, 100);
+  const studentName = cleanName(body.studentName);
   const studentNumber = typeof body.studentNumber === 'string' ? body.studentNumber.trim() : '';
   const programmeCode = upperOrNull(body.programmeCode);
   const groupCode = body.groupCode === undefined || body.groupCode === null ? null : body.groupCode;
@@ -181,7 +186,7 @@ exports.createStudent = async (req, res) => {
     return sendError(res, 400, 'VALIDATION_FAILED', 'studentName, a 9-digit studentNumber and a valid programmeCode are required');
   }
   if (groupCode !== null && !GROUPS.includes(groupCode)) {
-    return sendError(res, 400, 'VALIDATION_FAILED', 'groupCode must be G01-G04');
+    return sendError(res, 400, 'VALIDATION_FAILED', `groupCode must be one of ${GROUPS[0]}-${GROUPS[GROUPS.length - 1]}`);
   }
 
   const studentId = randomUUID();
@@ -247,8 +252,8 @@ async function applyStudentEdit(req, res) {
 
   let newName;
   if (body.studentName !== undefined) {
-    newName = cleanText(body.studentName, 100);
-    if (newName === null) return sendError(res, 400, 'VALIDATION_FAILED', 'studentName must be 1-100 characters');
+    newName = cleanName(body.studentName);
+    if (newName === null) return sendError(res, 400, 'VALIDATION_FAILED', 'studentName must be 2-100 characters');
   }
   let newProgramme;
   if (body.programmeCode !== undefined) {
@@ -317,7 +322,7 @@ async function applyStudentEdit(req, res) {
 exports.assignToGroup = async (req, res) => {
   const groupCode = req.body?.groupCode;
   if (!GROUPS.includes(groupCode)) {
-    return sendError(res, 400, 'VALIDATION_FAILED', 'groupCode must be G01-G04');
+    return sendError(res, 400, 'VALIDATION_FAILED', `groupCode must be one of ${GROUPS[0]}-${GROUPS[GROUPS.length - 1]}`);
   }
 
   const outcome = await inTransaction(async (conn) => {

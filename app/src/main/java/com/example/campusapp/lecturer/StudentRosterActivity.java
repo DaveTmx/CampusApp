@@ -155,6 +155,7 @@ public class StudentRosterActivity extends AppCompatActivity {
         chips.put("G12", findViewById(R.id.chipG12));
         chips.put("G13", findViewById(R.id.chipG13));
         chips.put("G14", findViewById(R.id.chipG14));
+        chips.put("G15", findViewById(R.id.chipG15));
         chips.put(StudentRepository.UNASSIGNED, findViewById(R.id.chipUnassigned));
 
         for (Map.Entry<String, TextView> entry : chips.entrySet()) {

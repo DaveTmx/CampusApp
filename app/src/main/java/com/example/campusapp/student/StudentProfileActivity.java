@@ -158,7 +158,7 @@ public class StudentProfileActivity extends AppCompatActivity {
     }
 
     private void promptForGroup() {
-        EditText input = newInput("New group (G01 to G14)", "");
+        EditText input = newInput("New group (G01 to G15)", "");
         new AlertDialog.Builder(this)
                 .setTitle("Request group change")
                 .setView(input)
