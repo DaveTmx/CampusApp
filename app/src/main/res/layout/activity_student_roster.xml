@@ -59,6 +59,7 @@
                 <TextView android:id="@+id/chipG12" style="@style/FilterChip" android:text="G12"/>
                 <TextView android:id="@+id/chipG13" style="@style/FilterChip" android:text="G13"/>
                 <TextView android:id="@+id/chipG14" style="@style/FilterChip" android:text="G14"/>
+                <TextView android:id="@+id/chipG15" style="@style/FilterChip" android:text="G15"/>
                 <TextView android:id="@+id/chipUnassigned" style="@style/FilterChip" android:text="Unassigned"/>
             </LinearLayout>
         </HorizontalScrollView>

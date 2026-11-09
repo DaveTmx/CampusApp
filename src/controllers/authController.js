@@ -5,6 +5,7 @@
 // Lecturer accounts are never created here. Registration always makes a
 // 'student'. Lecturers are provisioned by scripts/create-lecturer.js, which only
 // accepts emails on the server-side APPROVED_LECTURER_EMAILS list.
+const { randomUUID } = require('crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pool = require('../db/pool');
@@ -14,6 +15,7 @@ const { PROGRAMMES, LOCKOUT, ROLES } = require('../constants');
 const { hashToken, issueVerificationToken, issuePasswordResetToken, RESEND_COOLDOWN_SECONDS } = require('../services/verification');
 const { sendVerificationEmail, sendPasswordResetEmail } = require('../mailer');
 const { sendError } = require('../util/http');
+const { normalizeEmail, isValidEmail, cleanText } = require('../util/validation');
 
 const BCRYPT_ROUNDS = 12;
 const SESSION_SECONDS = 12 * 60 * 60;
@@ -31,6 +33,7 @@ function getDummyHash() {
 // Creates an inactive student account and the matching student record, then emails a link.
 exports.register = async (req, res) => {
   const body = req.body || {};
+  const fullName = cleanText(body.fullName, 100);
   const email = normalizeEmail(body.email);
   const password = typeof body.password === 'string' ? body.password : '';
   const studentNumber = typeof body.studentNumber === 'string' ? body.studentNumber.trim() : '';
@@ -49,7 +52,9 @@ exports.register = async (req, res) => {
 
   const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
 
-  try {   token = await inTransaction(async (conn) => {
+  let token;
+  try {
+    token = await inTransaction(async (conn) => {
       const [account] = await conn.query(
         'INSERT INTO accounts (email, password_hash, full_name, role, is_active) VALUES (?, ?, ?, ?, 0)',
         [email, passwordHash, fullName, ROLES.STUDENT]
@@ -58,7 +63,8 @@ exports.register = async (req, res) => {
         'INSERT INTO students (student_id, student_name, student_number, programme_code, account_id) VALUES (?, ?, ?, ?, ?)',
         [randomUUID(), fullName, studentNumber, programmeCode, account.insertId]
       );
-       return issueVerificationToken(conn, account.insertId);});
+      return issueVerificationToken(conn, account.insertId);
+    });
   } catch (err) {
     if (err.code === 'ER_DUP_ENTRY' && err.message.includes('uq_accounts_email')) {
       return sendError(res, 409, 'DUPLICATE_EMAIL', 'An account with this email already exists');

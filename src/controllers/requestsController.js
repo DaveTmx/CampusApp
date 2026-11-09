@@ -34,7 +34,7 @@ exports.createRequest = async (req, res) => {
   }
   const value = typeof body.value === 'string' ? body.value.trim().toUpperCase() : '';
   if (type === GROUP_CHANGE && !GROUPS.includes(value)) {
-    return sendError(res, 400, 'VALIDATION_FAILED', 'value must be a lab group code (G01-G14)');
+    return sendError(res, 400, 'VALIDATION_FAILED', 'value must be a lab group code (G01-G15)');
   }
   if (type === NUMBER_CORRECTION && !/^[0-9]{9}$/.test(value)) {
     return sendError(res, 400, 'VALIDATION_FAILED', 'value must be exactly 9 digits');

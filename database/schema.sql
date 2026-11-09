@@ -38,7 +38,8 @@ INSERT IGNORE INTO lab_groups (group_code, capacity) VALUES
   ('G11', 16),
   ('G12', 16),
   ('G13', 16),
-  ('G14', 16);
+  ('G14', 16),
+  ('G15', 16);
 
 -- Login accounts. role is set by the server only: self-registration always
 -- creates 'student'; 'lecturer' accounts come from scripts/create-lecturer.js.
@@ -67,7 +68,9 @@ CREATE TABLE IF NOT EXISTS students (
   group_code      CHAR(3) NULL,
   account_id      INT NULL,
   version         INT NOT NULL DEFAULT 1,
-  deleted_at      DATETIME NULL,                    -- soft delete; the number stays reserved
+  deleted_at      DATETIME NULL,   -- soft delete; the number stays reserved
+  claim_code_hash CHAR(64) NULL,
+  claimed_at DATETIME NULL,
   UNIQUE KEY uq_student_number (student_number),
   UNIQUE KEY uq_students_account (account_id),
   CONSTRAINT fk_student_programme FOREIGN KEY (programme_code) REFERENCES programmes(programme_code),

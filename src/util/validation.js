@@ -35,3 +35,4 @@ function isPlainObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
+module.exports = { normalizeEmail, isValidEmail, cleanText, parseIntParam, escapeLike, isPlainObject };
